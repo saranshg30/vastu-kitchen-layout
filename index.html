@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Vastu Kitchen Layout — Professional Plan</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #0c0f1a;
+      --bg2: #141829;
+      --glass: rgba(20, 24, 41, 0.72);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --gold: #f59e0b;
+      --fire: #ef4444;
+      --water: #38bdf8;
+      --green: #22c55e;
+      --counter: #1e293b;
+      --sink: #0ea5e9;
+      --stove: #f97316;
+      --fridge: #64748b;
+      --pantry: #92400e;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw
+    }
+
+    canvas {
+      display: block
+    }
+
+    /* Glass panels */
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 16px
+    }
+
+    .glass-sm {
+      background: rgba(20, 24, 41, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 10px
+    }
+
+    /* Layout */
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh
+    }
+
+    #canvas-3d {
+      position: absolute;
+      inset: 0;
+      z-index: 1
+    }
+
+    #canvas-2d {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      cursor: grab
+    }
+
+    #canvas-2d:active {
+      cursor: grabbing
+    }
+
+    .ui {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between
+    }
+
+    .ui>* {
+      pointer-events: auto
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px
+    }
+
+    .title-panel {
+      padding: 20px 24px;
+      max-width: 420px
+    }
+
+    .title-panel h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .title-panel .sub {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 6px;
+      line-height: 1.5
+    }
+
+    .title-panel .sub strong {
+      color: #e2e8f0
+    }
+
+    /* View toggle */
+    .view-toggle {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 12px
+    }
+
+    .view-toggle button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--text2);
+      background: transparent
+    }
+
+    .view-toggle button.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4)
+    }
+
+    .view-toggle button:hover:not(.active) {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06)
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 12px
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text2);
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04)
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0
+    }
+
+    /* Vastu zones */
+    .vastu-panel {
+      padding: 16px 20px;
+      max-width: 260px
+    }
+
+    .vastu-panel h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px
+    }
+
+    .vastu-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 6px
+    }
+
+    .vastu-icon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%
+    }
+
+    /* Bottom bar */
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end
+    }
+
+    .info-chip {
+      padding: 8px 16px;
+      font-size: 11px;
+      color: var(--text2);
+      font-family: 'JetBrains Mono', monospace
+    }
+
+    /* Compass */
+    .compass {
+      width: 72px;
+      height: 72px;
+      position: relative
+    }
+
+    .compass svg {
+      width: 100%;
+      height: 100%
+    }
+
+    /* Animations */
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 0.4
+      }
+
+      50% {
+        opacity: 1
+      }
+    }
+
+    @keyframes flow {
+      0% {
+        stroke-dashoffset: 20
+      }
+
+      100% {
+        stroke-dashoffset: 0
+      }
+    }
+
+    .vent-arrow {
+      animation: flow 1s linear infinite
+    }
+
+    .pulse {
+      animation: pulse 2s ease-in-out infinite
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <canvas id="canvas-3d"></canvas>
+    <canvas id="canvas-2d"></canvas>
+    <div class="ui">
+      <div class="header">
+        <div class="glass title-panel">
+          <h1>⬡ Vastu Kitchen Plan</h1>
+          <div class="sub">
+            Room: <strong>22.5' × 10.25'</strong> &nbsp;|&nbsp;
+            Orient: <strong>Top=West</strong>, <strong>Right=South</strong><br />
+            Agni (SE) stove • Ishaan (NE) sink • South window ventilation
+          </div>
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--sink)"></div>2-Slab Sink
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--stove)"></div>Stove
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--fridge)"></div>Fridge
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--water)"></div>Window
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--green)"></div>Pillars
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--gold)"></div>Ventilation
+            </div>
+          </div>
+        </div>
+        <div class="glass-sm view-toggle">
+          <button id="btn-2d" class="active">2D Blueprint</button>
+          <button id="btn-3d">3D View</button>
+        </div>
+      </div>
+      <div class="bottom-bar">
+        <div class="glass vastu-panel" id="vastu-info">
+          <h3>🕉 Vastu Zones</h3>
+          <div class="vastu-row">
+            <div class="vastu-icon" style="background:#ef4444"></div>SE (Agni) — Stove &amp; cooking
+          </div>
+          <div class="vastu-row">
+            <div class="vastu-icon" style="background:#38bdf8"></div>NE (Ishaan) — Water &amp; washing
+          </div>
+          <div class="vastu-row">
+            <div class="vastu-icon" style="background:#64748b"></div>SW (Nairutya) — Heavy storage, fridge
+          </div>
+          <div class="vastu-row">
+            <div class="vastu-icon" style="background:#a78bfa"></div>NW (Vayu) — Provisions &amp; airflow
+          </div>
+        </div>
+        <div class="glass-sm info-chip">Scroll to zoom • Drag to pan • Toggle 3D for orbit view</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    // ─── LAYOUT CONFIG (all in feet, matching sketch exactly) ───
+    const L = {
+      room: { w: 10.25, h: 22.5, wallH: 9, t: 0.5 },
+      door: { width: 3, height: 7, offset: 6.25 }, // offset from North on East wall
+      window: { width: 4, sillH: 3, h: 3 }, // on South wall, centered
+      pillar: { size: 1.25 },
+      counter: { depth: 2 },
+      sink: { w: 3.5, d: 2, slabs: 2 }, // two-slab
+      stove: { w: 2.5, d: 2 },
+      fridge: { w: 2.5, d: 2.5 },
+      chimney: { w: 2, d: 1.5 },
+      pantry: { w: 2, d: 1.5 }
+    };
+
+    // Derived
+    const hW = L.room.w / 2, hH = L.room.h / 2;
+
+    // ═══════════════════════════════════════════
+    //  2D BLUEPRINT (Canvas-based, architect style)
+    // ═══════════════════════════════════════════
+    const c2d = document.getElementById('canvas-2d');
+    const ctx = c2d.getContext('2d');
+    let panX = 0, panY = 0, zoom = 1, dragging = false, lastMouse = { x: 0, y: 0 };
+
+    // Pan & Zoom
+    c2d.addEventListener('wheel', e => { e.preventDefault(); zoom = Math.max(0.5, Math.min(3, zoom - e.deltaY * 0.001)); draw2D(); });
+    c2d.addEventListener('mousedown', e => { dragging = true; lastMouse = { x: e.clientX, y: e.clientY }; });
+    c2d.addEventListener('mousemove', e => { if (!dragging) return; panX += e.clientX - lastMouse.x; panY += e.clientY - lastMouse.y; lastMouse = { x: e.clientX, y: e.clientY }; draw2D(); });
+    c2d.addEventListener('mouseup', () => dragging = false);
+    c2d.addEventListener('mouseleave', () => dragging = false);
+
+    function px(feet) { return feet * 38 * zoom; }
+
+    function toScreen(xFt, yFt) {
+      // x = East-West (room width 10.25), y = North-South (room length 22.5)
+      // On screen: top=West, bottom=East, left=North, right=South
+      // So screen-x maps to N-S (y), screen-y maps to E-W (x)
+      const cx = c2d.width / 2 + panX;
+      const cy = c2d.height / 2 + panY;
+      return { x: cx + yFt * px(1), y: cy + xFt * px(1) };
+    }
+
+    function drawRect(xFt, yFt, wFt, dFt, fill, stroke, lw) {
+      const c = toScreen(xFt, yFt);
+      const sw = px(dFt), sh = px(wFt);
+      ctx.fillStyle = fill;
+      ctx.strokeStyle = stroke || 'transparent';
+      ctx.lineWidth = lw || 1;
+      ctx.fillRect(c.x - sw / 2, c.y - sh / 2, sw, sh);
+      if (stroke) ctx.strokeRect(c.x - sw / 2, c.y - sh / 2, sw, sh);
+    }
+
+    function drawRoundRect(xFt, yFt, wFt, dFt, fill, stroke, r) {
+      const c = toScreen(xFt, yFt);
+      const sw = px(dFt), sh = px(wFt);
+      const x0 = c.x - sw / 2, y0 = c.y - sh / 2;
+      const radius = px(r || 0.15);
+      ctx.beginPath();
+      ctx.roundRect(x0, y0, sw, sh, radius);
+      ctx.fillStyle = fill;
+      ctx.fill();
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.5; ctx.stroke(); }
+    }
+
+    let animFrame = 0;
+    function draw2D() {
+      c2d.width = window.innerWidth; c2d.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      // Background
+      const bg = ctx.createRadialGradient(c2d.width / 2, c2d.height / 2, 0, c2d.width / 2, c2d.height / 2, c2d.width * 0.7);
+      bg.addColorStop(0, '#141829'); bg.addColorStop(1, '#0c0f1a');
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, c2d.width, c2d.height);
+
+      // Subtle grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1;
+      const gs = px(1);
+      const o = toScreen(-hW, -hH);
+      const startX = o.x % gs - gs, startY = o.y % gs - gs;
+      for (let gx = startX; gx < c2d.width; gx += gs) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, c2d.height); ctx.stroke(); }
+      for (let gy = startY; gy < c2d.height; gy += gs) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(c2d.width, gy); ctx.stroke(); }
+
+      // Vastu quadrant overlays
+      ctx.globalAlpha = 0.06;
+      drawRect(hW / 2, -hH / 2, hW, hH, '#38bdf8'); // NE - Water
+      drawRect(hW / 2, hH / 2, hW, hH, '#ef4444');  // SE - Fire
+      drawRect(-hW / 2, hH / 2, hW, hH, '#64748b'); // SW - Earth
+      drawRect(-hW / 2, -hH / 2, hW, hH, '#a78bfa'); // NW - Air
+      ctx.globalAlpha = 1;
+
+      // Room floor
+      drawRect(0, 0, L.room.w, L.room.h, '#1a1f35', null);
+
+      // Room walls (thick outline)
+      const tl = toScreen(-hW, -hH), br = toScreen(hW, hH);
+      const rw = br.x - tl.x, rh = br.y - tl.y;
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 4;
+      ctx.strokeRect(tl.x, tl.y, rw, rh);
+
+      // Wall fill (hatching)
+      const wallPx = px(L.room.t);
+      ctx.fillStyle = '#2a2f45';
+      // North wall (left)
+      ctx.fillRect(tl.x - wallPx, tl.y - wallPx, wallPx, rh + wallPx * 2);
+      // South wall (right) - with window gap
+      const wCenter = toScreen(0, hH);
+      const wHalf = px(L.window.width / 2);
+      ctx.fillRect(br.x, tl.y - wallPx, wallPx, wCenter.y - wHalf - tl.y + wallPx);
+      ctx.fillRect(br.x, wCenter.y + wHalf, wallPx, br.y + wallPx - wCenter.y - wHalf);
+      // West wall (top)
+      ctx.fillRect(tl.x - wallPx, tl.y - wallPx, rw + wallPx * 2, wallPx);
+      // East wall (bottom) - with door gap
+      const doorStartY = tl.y + px(L.door.offset);
+      const doorEndY = doorStartY + px(L.door.width);
+      ctx.fillRect(tl.x - wallPx, br.y, rw + wallPx * 2, wallPx);
+      // Clear door opening
+      ctx.clearRect(tl.x - wallPx, doorStartY - 1, wallPx + 2, px(L.door.width) + 2);
+      // Redraw background there
+      ctx.fillStyle = '#141829';
+      ctx.fillRect(tl.x - wallPx, doorStartY, wallPx, px(L.door.width));
+
+      // Wait - East wall is bottom. Door offset from North (left).
+      // East wall = bottom = max x. Door at y from north.
+      // Actually let me reconsider the coordinate mapping.
+      // In sketch: Top=West, Bottom=East, Left=North, Right=South
+      // Our toScreen: screen-x = N→S (y-axis), screen-y = W→E (x-axis)
+      // So East wall is at x=+hW → screen bottom
+      // North wall is at y=-hH → screen left
+      // Door on East wall: offset from North = 6.25 from y=-hH
+
+      // Let me redo walls properly
+      ctx.fillStyle = '#1a1f35'; ctx.fillRect(0, 0, c2d.width, c2d.height); // clear
+
+      // Re-draw background
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, c2d.width, c2d.height);
+      // Grid again
+      ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1;
+      for (let gx = startX; gx < c2d.width; gx += gs) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, c2d.height); ctx.stroke(); }
+      for (let gy = startY; gy < c2d.height; gy += gs) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(c2d.width, gy); ctx.stroke(); }
+
+      // Vastu overlays
+      ctx.globalAlpha = 0.05;
+      drawRect(hW / 2, -hH / 2, hW, hH, '#38bdf8');
+      drawRect(hW / 2, hH / 2, hW, hH, '#ef4444');
+      drawRect(-hW / 2, hH / 2, hW, hH, '#64748b');
+      drawRect(-hW / 2, -hH / 2, hW, hH, '#a78bfa');
+      ctx.globalAlpha = 1;
+
+      // Floor
+      drawRect(0, 0, L.room.w, L.room.h, 'rgba(30,41,59,0.5)');
+
+      // Floor tile pattern
+      ctx.strokeStyle = 'rgba(255,255,255,0.02)'; ctx.lineWidth = 0.5;
+      const tileSize = px(2);
+      for (let tx = tl.x; tx < br.x; tx += tileSize) {
+        ctx.beginPath(); ctx.moveTo(tx, tl.y); ctx.lineTo(tx, br.y); ctx.stroke();
+      }
+      for (let ty = tl.y; ty < br.y; ty += tileSize) {
+        ctx.beginPath(); ctx.moveTo(tl.x, ty); ctx.lineTo(br.x, ty); ctx.stroke();
+      }
+
+      // === WALLS ===
+      ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+
+      // West wall (top edge) - full
+      ctx.beginPath(); ctx.moveTo(tl.x, tl.y); ctx.lineTo(br.x, tl.y); ctx.stroke();
+      // North wall (left edge) - full
+      ctx.beginPath(); ctx.moveTo(tl.x, tl.y); ctx.lineTo(tl.x, br.y); ctx.stroke();
+
+      // East wall (bottom edge) - with door gap
+      // Door at offset 6.25' from North (left side). So gap in screen-x from tl.x + px(6.25)
+      const dsx = tl.x + px(L.door.offset);
+      const dex = dsx + px(L.door.width);
+      ctx.beginPath(); ctx.moveTo(tl.x, br.y); ctx.lineTo(dsx, br.y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(dex, br.y); ctx.lineTo(br.x, br.y); ctx.stroke();
+
+      // South wall (right edge) - with window gap
+      const wcsy = tl.y + rh / 2 - px(L.window.width / 2);
+      const wcey = tl.y + rh / 2 + px(L.window.width / 2);
+      ctx.beginPath(); ctx.moveTo(br.x, tl.y); ctx.lineTo(br.x, wcsy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(br.x, wcey); ctx.lineTo(br.x, br.y); ctx.stroke();
+
+      // === DOOR (architectural arc) ===
+      ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath();
+      ctx.arc(dsx, br.y, px(L.door.width), -Math.PI / 2, 0);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // Door leaf line
+      ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(dsx, br.y); ctx.lineTo(dsx, br.y - px(L.door.width)); ctx.stroke();
+      // Door label
+      ctx.fillStyle = '#818cf8'; ctx.font = `600 ${11 * zoom}px 'JetBrains Mono'`;
+      ctx.fillText('DOOR 3\'', dsx + px(0.3), br.y + px(1));
+
+      // === WINDOW (South wall) ===
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(br.x, wcsy); ctx.lineTo(br.x, wcey); ctx.stroke();
+      // Double line for glazing
+      ctx.strokeStyle = '#0ea5e9'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(br.x + 4, wcsy + 4); ctx.lineTo(br.x + 4, wcey - 4); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(br.x - 4, wcsy + 4); ctx.lineTo(br.x - 4, wcey - 4); ctx.stroke();
+      ctx.fillStyle = '#38bdf8'; ctx.font = `500 ${10 * zoom}px 'JetBrains Mono'`;
+      ctx.fillText('WINDOW 4\'', br.x + px(0.5), (wcsy + wcey) / 2 + 4);
+
+      // === PILLARS (NW corners on West wall) ===
+      const pSize = px(L.pillar.size);
+      const pillars2d = [
+        { x: tl.x, y: tl.y }, // NW corner (top-left)
+        { x: br.x - pSize, y: tl.y }, // SW corner (top-right)
+      ];
+      pillars2d.forEach(p => {
+        ctx.fillStyle = 'rgba(34,197,94,0.3)'; ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2;
+        ctx.fillRect(p.x, p.y, pSize, pSize);
+        ctx.strokeRect(p.x, p.y, pSize, pSize);
+        // Diagonal hatching
+        ctx.strokeStyle = 'rgba(34,197,94,0.4)'; ctx.lineWidth = 1;
+        for (let d = 0; d < pSize * 2; d += 6) {
+          ctx.beginPath();
+          ctx.moveTo(p.x + Math.min(d, pSize), p.y + Math.max(0, d - pSize));
+          ctx.lineTo(p.x + Math.max(0, d - pSize), p.y + Math.min(d, pSize));
+          ctx.stroke();
+        }
+      });
+
+      // === KITCHEN ELEMENTS ===
+
+      // L-shaped counter along North wall + turning East
+      // North counter: along East wall side (bottom), from NE area
+      const counterColor = 'rgba(30,41,59,0.8)';
+      const counterStroke = '#475569';
+
+      // Counter along North wall (left side) near NE corner for sink
+      // NE = East(bottom) + North(left). Counter goes along left wall from near top
+      // Actually: NE corner = bottom-left of screen. Let me place correctly.
+      // Screen: left=North, right=South, top=West, bottom=East
+      // NE corner = bottom-left. SE corner = bottom-right.
+
+      // Counter along East wall (bottom) from NE towards door
+      // This is where the two-slab sink goes (NE = water zone per Vaastu)
+      const counterNE_x = hW - L.counter.depth / 2; // near East wall
+      const counterNE_y = -hH + 3; // from North wall, shifted south
+      drawRoundRect(counterNE_x, counterNE_y, L.counter.depth, 5, counterColor, counterStroke, 0.1);
+
+      // Two-slab sink in NE counter
+      const sinkY = -hH + 2;
+      // Slab 1
+      drawRoundRect(hW - 1, sinkY - 0.5, 1.4, 1.5, 'rgba(14,165,233,0.25)', '#0ea5e9', 0.2);
+      drawRoundRect(hW - 1, sinkY - 0.5, 1.0, 1.1, 'rgba(14,165,233,0.15)', '#0ea5e9', 0.15);
+      // Slab 2
+      drawRoundRect(hW - 1, sinkY + 1.2, 1.4, 1.5, 'rgba(14,165,233,0.25)', '#0ea5e9', 0.2);
+      drawRoundRect(hW - 1, sinkY + 1.2, 1.0, 1.1, 'rgba(14,165,233,0.15)', '#0ea5e9', 0.15);
+      // Faucet dot
+      ctx.fillStyle = '#38bdf8';
+      const faucetPos = toScreen(hW - 1, sinkY + 0.35);
+      ctx.beginPath(); ctx.arc(faucetPos.x, faucetPos.y, 3 * zoom, 0, Math.PI * 2); ctx.fill();
+
+      // Label
+      ctx.fillStyle = '#0ea5e9'; ctx.font = `600 ${10 * zoom}px 'JetBrains Mono'`;
+      const sinkLabel = toScreen(hW - 0.2, sinkY + 0.35);
+      ctx.save(); ctx.translate(sinkLabel.x, sinkLabel.y); ctx.rotate(-Math.PI / 2);
+      ctx.fillText('2-SLAB SINK', 0, 0);
+      ctx.restore();
+
+      // Counter along North wall going towards West (left going up)
+      drawRoundRect(hW - L.counter.depth / 2, -hH + 6, L.counter.depth, 4, counterColor, counterStroke, 0.1);
+
+      // Stove in SE area (bottom-right of screen)
+      const stoveX = hW - L.counter.depth / 2;
+      const stoveY = hH - 4;
+      drawRoundRect(stoveX, stoveY, L.stove.w, L.stove.d, 'rgba(249,115,22,0.3)', '#f97316', 0.1);
+      // Burners
+      const burnerPositions = [[-0.4, -0.35], [0.4, -0.35], [-0.4, 0.35], [0.4, 0.35]];
+      burnerPositions.forEach(([bx, by]) => {
+        const bp = toScreen(stoveX + bx, stoveY + by);
+        ctx.strokeStyle = '#f97316'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(bp.x, bp.y, 6 * zoom, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(bp.x, bp.y, 2 * zoom, 0, Math.PI * 2); ctx.fill();
+      });
+
+      // Chimney above stove
+      drawRoundRect(stoveX, stoveY, L.chimney.w, L.chimney.d, 'rgba(249,115,22,0.1)', '#c2410c', 0.1);
+      ctx.fillStyle = '#f97316'; ctx.font = `600 ${10 * zoom}px 'JetBrains Mono'`;
+      const stoveLbl = toScreen(stoveX + 1.8, stoveY);
+      ctx.fillText('STOVE + CHIMNEY', stoveLbl.x, stoveLbl.y);
+      ctx.fillStyle = '#ef4444'; ctx.font = `500 ${9 * zoom}px 'JetBrains Mono'`;
+      ctx.fillText('(SE Agni Zone)', stoveLbl.x, stoveLbl.y + 14 * zoom);
+
+      // Counter along South wall near stove
+      drawRoundRect(hW - L.counter.depth / 2, hH - 7, L.counter.depth, 4, counterColor, counterStroke, 0.1);
+
+      // Fridge in SW (top-right of screen... wait: SW = South+West = right+top = screen top-right)
+      const fridgeX = -hW + L.fridge.w / 2 + 0.3;
+      const fridgeY = hH - L.fridge.d / 2 - 0.3;
+      drawRoundRect(fridgeX, fridgeY, L.fridge.w, L.fridge.d, 'rgba(100,116,139,0.35)', '#94a3b8', 0.15);
+      // Fridge interior lines
+      const fr = toScreen(fridgeX, fridgeY);
+      ctx.strokeStyle = 'rgba(148,163,184,0.3)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(fr.x - px(L.fridge.d / 2) * 0.3, fr.y); ctx.lineTo(fr.x + px(L.fridge.d / 2) * 0.3, fr.y); ctx.stroke();
+      ctx.fillStyle = '#94a3b8'; ctx.font = `600 ${10 * zoom}px 'JetBrains Mono'`;
+      ctx.fillText('FRIDGE', fr.x - px(0.5), fr.y + 4);
+      ctx.fillStyle = '#64748b'; ctx.font = `500 ${9 * zoom}px 'JetBrains Mono'`;
+      ctx.fillText('(SW Zone)', fr.x - px(0.5), fr.y + 18 * zoom);
+
+      // Pantry / storage along West wall (top) center-ish
+      const pantryX = -hW + L.pantry.w / 2 + 0.3;
+      const pantryY = -hH + 4;
+      drawRoundRect(pantryX, pantryY, L.pantry.w, 4, 'rgba(146,64,14,0.25)', '#b45309', 0.1);
+      const pl = toScreen(pantryX, pantryY);
+      ctx.fillStyle = '#d97706'; ctx.font = `600 ${10 * zoom}px 'JetBrains Mono'`;
+      ctx.fillText('PANTRY / STORAGE', pl.x - px(0.5), pl.y + 4);
+      ctx.fillStyle = '#92400e'; ctx.font = `500 ${9 * zoom}px 'JetBrains Mono'`;
+      ctx.fillText('(NW Vayu Zone)', pl.x - px(0.5), pl.y + 18 * zoom);
+
+      // Prep counter along West wall below window
+      const prepX = -hW + L.counter.depth / 2 + 0.2;
+      const prepY = 2;
+      drawRoundRect(prepX, prepY, L.counter.depth, 5, counterColor, counterStroke, 0.1);
+      const prl = toScreen(prepX, prepY);
+      ctx.fillStyle = '#94a3b8'; ctx.font = `500 ${10 * zoom}px 'JetBrains Mono'`;
+      ctx.fillText('PREP COUNTER', prl.x - px(0.5), prl.y + 4);
+
+      // === VENTILATION FLOW (animated) ===
+      animFrame++;
+      const dashOffset = (animFrame * 0.5) % 20;
+      const ventStart = toScreen(0, hH); // south window
+      const ventMid = toScreen(hW / 2, 0); // mid room
+      const ventEnd = toScreen(stoveX, stoveY); // chimney
+
+      ctx.strokeStyle = 'rgba(245,158,11,0.4)'; ctx.lineWidth = 2;
+      ctx.setLineDash([8, 8]); ctx.lineDashOffset = -dashOffset;
+      ctx.beginPath(); ctx.moveTo(ventStart.x, ventStart.y);
+      ctx.quadraticCurveTo(ventMid.x, ventMid.y, ventEnd.x, ventEnd.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Arrow head at chimney
+      const angle = Math.atan2(ventEnd.y - ventMid.y, ventEnd.x - ventMid.x);
+      ctx.fillStyle = 'rgba(245,158,11,0.6)';
+      ctx.beginPath();
+      ctx.moveTo(ventEnd.x, ventEnd.y);
+      ctx.lineTo(ventEnd.x - 10 * Math.cos(angle - 0.4), ventEnd.y - 10 * Math.sin(angle - 0.4));
+      ctx.lineTo(ventEnd.x - 10 * Math.cos(angle + 0.4), ventEnd.y - 10 * Math.sin(angle + 0.4));
+      ctx.fill();
+
+      // Ventilation label
+      ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = `italic ${10 * zoom}px Inter`;
+      ctx.fillText('↗ Cross-ventilation flow', ventMid.x - px(2), ventMid.y - px(0.5));
+
+      // NE label (water zone)
+      const neLabel = toScreen(hW - 2, -hH + 1);
+      ctx.fillStyle = 'rgba(56,189,248,0.5)'; ctx.font = `500 ${10 * zoom}px 'JetBrains Mono'`;
+      ctx.fillText('NE — ISHAAN (Water)', neLabel.x, neLabel.y);
+
+      // === DIMENSION LINES ===
+      ctx.strokeStyle = 'rgba(226,232,240,0.3)'; ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+
+      // Top dimension (22.5' N-S)
+      const dimTop = tl.y - px(1.5);
+      ctx.beginPath(); ctx.moveTo(tl.x, dimTop); ctx.lineTo(br.x, dimTop); ctx.stroke();
+      // Ticks
+      ctx.beginPath(); ctx.moveTo(tl.x, dimTop - 6); ctx.lineTo(tl.x, dimTop + 6); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(br.x, dimTop - 6); ctx.lineTo(br.x, dimTop + 6); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#e2e8f0'; ctx.font = `600 ${12 * zoom}px 'JetBrains Mono'`;
+      ctx.fillText('22.5\'', (tl.x + br.x) / 2 - px(0.7), dimTop - 8);
+
+      // Left dimension (10.25' E-W)
+      const dimLeft = tl.x - px(1.5);
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(dimLeft, tl.y); ctx.lineTo(dimLeft, br.y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(dimLeft - 6, tl.y); ctx.lineTo(dimLeft + 6, tl.y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(dimLeft - 6, br.y); ctx.lineTo(dimLeft + 6, br.y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.save(); ctx.translate(dimLeft - 10, (tl.y + br.y) / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('10.25\'', -px(0.7), 0);
+      ctx.restore();
+
+      // East wall segment dimensions
+      ctx.fillStyle = 'rgba(226,232,240,0.4)'; ctx.font = `500 ${9 * zoom}px 'JetBrains Mono'`;
+      const dimBot = br.y + px(1.2);
+      ctx.setLineDash([3, 3]); ctx.strokeStyle = 'rgba(226,232,240,0.2)';
+      // 6.25' segment
+      ctx.beginPath(); ctx.moveTo(tl.x, dimBot); ctx.lineTo(dsx, dimBot); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillText('6.25\'', (tl.x + dsx) / 2 - px(0.4), dimBot + 14);
+      // 3' door
+      ctx.fillStyle = '#818cf8';
+      ctx.fillText('3\'', (dsx + dex) / 2 - px(0.15), dimBot + 14);
+      // 13.25' segment
+      ctx.fillStyle = 'rgba(226,232,240,0.4)';
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(dex, dimBot); ctx.lineTo(br.x, dimBot); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillText('13.25\'', (dex + br.x) / 2 - px(0.5), dimBot + 14);
+
+      // === COMPASS ROSE ===
+      const compassX = br.x + px(3), compassY = tl.y + px(2);
+      const cr = px(1.2);
+      ctx.strokeStyle = 'rgba(226,232,240,0.3)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(compassX, compassY, cr, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = '#e2e8f0'; ctx.font = `700 ${13 * zoom}px Inter`;
+      ctx.textAlign = 'center';
+      ctx.fillText('W', compassX, compassY - cr - 8);
+      ctx.fillText('E', compassX, compassY + cr + 16);
+      ctx.fillText('N', compassX - cr - 14, compassY + 5);
+      ctx.fillText('S', compassX + cr + 14, compassY + 5);
+      // Draw cross
+      ctx.strokeStyle = 'rgba(226,232,240,0.2)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(compassX, compassY - cr + 4); ctx.lineTo(compassX, compassY + cr - 4); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(compassX - cr + 4, compassY); ctx.lineTo(compassX + cr - 4, compassY); ctx.stroke();
+      // N arrow (North = left = minus x)
+      ctx.fillStyle = '#6366f1';
+      ctx.beginPath();
+      ctx.moveTo(compassX - cr + 4, compassY);
+      ctx.lineTo(compassX - cr + 14, compassY - 5);
+      ctx.lineTo(compassX - cr + 14, compassY + 5);
+      ctx.fill();
+      ctx.textAlign = 'left';
+
+      // Title watermark
+      ctx.fillStyle = 'rgba(255,255,255,0.03)'; ctx.font = `800 ${60 * zoom}px Inter`;
+      ctx.fillText('VASTU KITCHEN', tl.x, br.y + px(4));
+    }
+
+    // Animate 2D
+    function anim2D() { requestAnimationFrame(anim2D); if (c2d.style.display !== 'none') draw2D(); }
+    anim2D();
+
+    // ═══════════════════════════════════════════
+    //  3D VIEW — PREMIUM KITCHEN VISUALIZATION
+    // ═══════════════════════════════════════════
+    const c3d = document.getElementById('canvas-3d');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#f5ede3');
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 500);
+    camera.position.set(-12, 18, 16);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: c3d, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
+    const controls = new THREE.OrbitControls(camera, c3d);
+    controls.target.set(0, 1.5, 0);
+    controls.maxPolarAngle = Math.PI / 2 - 0.02;
+    controls.minDistance = 8;
+    controls.maxDistance = 45;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.update();
+
+    // ─── LIGHTING (warm kitchen ambiance) ───
+    scene.add(new THREE.AmbientLight(0xfff8f0, 0.45));
+    scene.add(new THREE.HemisphereLight(0xffeedd, 0xd4c4a8, 0.35));
+
+    const sun = new THREE.DirectionalLight(0xfff0d4, 0.65);
+    sun.position.set(10, 22, -8);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 60;
+    sun.shadow.camera.left = -16; sun.shadow.camera.right = 16;
+    sun.shadow.camera.top = 16; sun.shadow.camera.bottom = -16;
+    sun.shadow.bias = -0.001;
+    sun.shadow.radius = 3;
+    scene.add(sun);
+
+    // Window light (from South wall)
+    const winLight = new THREE.SpotLight(0xddeeff, 0.6, 20, Math.PI / 4, 0.5);
+    winLight.position.set(hW + 2, 5, 0);
+    winLight.target.position.set(0, 2, 0);
+    scene.add(winLight); scene.add(winLight.target);
+
+    // Under-cabinet warm lights
+    const kitchenLight1 = new THREE.PointLight(0xffcc88, 0.4, 8, 2);
+    kitchenLight1.position.set(hW - 1.2, 5.5, -hH + 3);
+    scene.add(kitchenLight1);
+    const kitchenLight2 = new THREE.PointLight(0xffcc88, 0.4, 8, 2);
+    kitchenLight2.position.set(hW - 1.2, 5.5, hH - 5);
+    scene.add(kitchenLight2);
+    // Pantry area
+    const kitchenLight3 = new THREE.PointLight(0xffe0aa, 0.3, 8, 2);
+    kitchenLight3.position.set(-hW + 1.5, 5, -hH + 3);
+    scene.add(kitchenLight3);
+
+    // ─── MATERIALS (PBR-quality) ───
+    const M = {
+      wallMain: new THREE.MeshStandardMaterial({ color: '#f0e8dd', roughness: 0.92, side: THREE.DoubleSide }),
+      wallAccent: new THREE.MeshStandardMaterial({ color: '#e8ddd0', roughness: 0.88 }),
+      ceiling: new THREE.MeshStandardMaterial({ color: '#faf8f5', roughness: 0.95, side: THREE.DoubleSide }),
+      floorTile1: new THREE.MeshStandardMaterial({ color: '#d9cfc2', roughness: 0.55 }),
+      floorTile2: new THREE.MeshStandardMaterial({ color: '#c8bba8', roughness: 0.55 }),
+      baseboard: new THREE.MeshStandardMaterial({ color: '#e0d5c8', roughness: 0.7 }),
+      // Countertop - black granite look
+      counterTop: new THREE.MeshStandardMaterial({ color: '#1a1a1a', roughness: 0.15, metalness: 0.05 }),
+      counterBase: new THREE.MeshStandardMaterial({ color: '#e8ddd0', roughness: 0.7 }),
+      cabinetDoor: new THREE.MeshStandardMaterial({ color: '#f5f0ea', roughness: 0.6 }),
+      cabinetHandle: new THREE.MeshStandardMaterial({ color: '#8a8070', roughness: 0.3, metalness: 0.8 }),
+      upperCab: new THREE.MeshStandardMaterial({ color: '#f0ebe4', roughness: 0.6 }),
+      backsplash: new THREE.MeshStandardMaterial({ color: '#e0d8ce', roughness: 0.4 }),
+      // Sink - stainless steel
+      sinkBowl: new THREE.MeshStandardMaterial({ color: '#c8c8c8', roughness: 0.15, metalness: 0.85 }),
+      sinkRim: new THREE.MeshStandardMaterial({ color: '#d0d0d0', roughness: 0.2, metalness: 0.8 }),
+      faucetMat: new THREE.MeshStandardMaterial({ color: '#e0ddd8', roughness: 0.1, metalness: 0.9 }),
+      // Stove
+      stoveTop: new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.08, metalness: 0.2 }),
+      burnerGrate: new THREE.MeshStandardMaterial({ color: '#2a2a2a', roughness: 0.5, metalness: 0.7 }),
+      burnerRing: new THREE.MeshStandardMaterial({ color: '#555555', roughness: 0.3, metalness: 0.8 }),
+      knob: new THREE.MeshStandardMaterial({ color: '#222', roughness: 0.3, metalness: 0.5 }),
+      // Chimney - stainless steel
+      chimneyMat: new THREE.MeshStandardMaterial({ color: '#b8b8b8', roughness: 0.12, metalness: 0.9 }),
+      chimneyFilter: new THREE.MeshStandardMaterial({ color: '#999', roughness: 0.4, metalness: 0.6 }),
+      // Fridge
+      fridgeBody: new THREE.MeshStandardMaterial({ color: '#d4d4d4', roughness: 0.2, metalness: 0.6 }),
+      fridgeHandle: new THREE.MeshStandardMaterial({ color: '#aaa', roughness: 0.15, metalness: 0.85 }),
+      // Pantry
+      pantryBody: new THREE.MeshStandardMaterial({ color: '#a67c52', roughness: 0.65 }),
+      pantryShelf: new THREE.MeshStandardMaterial({ color: '#c4996e', roughness: 0.5 }),
+      // Window & door
+      glass: new THREE.MeshPhysicalMaterial({ color: '#c8e8ff', transparent: true, opacity: 0.25, roughness: 0, transmission: 0.92, thickness: 0.1 }),
+      windowFrame: new THREE.MeshStandardMaterial({ color: '#f5f0ea', roughness: 0.5 }),
+      doorWood: new THREE.MeshStandardMaterial({ color: '#8b6543', roughness: 0.55 }),
+      doorFrame: new THREE.MeshStandardMaterial({ color: '#e0d5c8', roughness: 0.5 }),
+      doorHandle: new THREE.MeshStandardMaterial({ color: '#b8a070', roughness: 0.2, metalness: 0.8 }),
+      // Pillars
+      pillarMat: new THREE.MeshStandardMaterial({ color: '#d4ccc0', roughness: 0.75 }),
+    };
+
+    // ─── HELPER FUNCTIONS ───
+    function box(w, h, d, x, y, z, mat) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+      m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+      scene.add(m); return m;
+    }
+    function cyl(r, h, x, y, z, mat, seg) {
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg || 32), mat);
+      m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+      scene.add(m); return m;
+    }
+    function torus(r, tube, x, y, z, mat) {
+      const m = new THREE.Mesh(new THREE.TorusGeometry(r, tube, 16, 48), mat);
+      m.position.set(x, y, z); m.rotation.x = Math.PI / 2;
+      m.castShadow = true; scene.add(m); return m;
+    }
+
+    // ─── FLOOR (checkerboard tile) ───
+    const tileSize = 1.5;
+    for (let fx = -hW; fx < hW; fx += tileSize) {
+      for (let fz = -hH; fz < hH; fz += tileSize) {
+        const ix = Math.floor((fx + hW) / tileSize);
+        const iz = Math.floor((fz + hH) / tileSize);
+        const mat = (ix + iz) % 2 === 0 ? M.floorTile1 : M.floorTile2;
+        const tw = Math.min(tileSize, hW - fx);
+        const td = Math.min(tileSize, hH - fz);
+        const tile = new THREE.Mesh(new THREE.PlaneGeometry(tw, td), mat);
+        tile.rotation.x = -Math.PI / 2;
+        tile.position.set(fx + tw / 2, 0.001, fz + td / 2);
+        tile.receiveShadow = true;
+        scene.add(tile);
+      }
+    }
+    // Base floor
+    const baseFloor = new THREE.Mesh(new THREE.PlaneGeometry(L.room.w + 2, L.room.h + 2), new THREE.MeshStandardMaterial({ color: '#d0c4b4' }));
+    baseFloor.rotation.x = -Math.PI / 2; baseFloor.position.y = -0.01; baseFloor.receiveShadow = true; scene.add(baseFloor);
+
+    // ─── WALLS ───
+    const wH = L.room.wallH, wT = L.room.t;
+
+    // West wall (top of sketch, z = -hH) — full
+    box(L.room.w + wT * 2, wH, wT, 0, wH / 2, -hH - wT / 2, M.wallMain);
+    // North wall (left, x = -hW) — full
+    box(wT, wH, L.room.h, -hW - wT / 2, wH / 2, 0, M.wallMain);
+
+    // South wall (right, x = +hW) — with window
+    const winGap = L.window.width;
+    const sideLen = (L.room.h - winGap) / 2;
+    box(wT, wH, sideLen, hW + wT / 2, wH / 2, -hH + sideLen / 2, M.wallAccent);
+    box(wT, wH, sideLen, hW + wT / 2, wH / 2, hH - sideLen / 2, M.wallAccent);
+    box(wT, L.window.sillH, winGap, hW + wT / 2, L.window.sillH / 2, 0, M.wallAccent);
+    box(wT, wH - L.window.sillH - L.window.h, winGap, hW + wT / 2, L.window.sillH + L.window.h + (wH - L.window.sillH - L.window.h) / 2, 0, M.wallAccent);
+
+    // Window glass
+    box(0.08, L.window.h, winGap, hW + wT / 2, L.window.sillH + L.window.h / 2, 0, M.glass);
+    // Window frame
+    const wfT = 0.15, wfD = 0.2;
+    box(wfD, L.window.h + wfT * 2, wfT, hW + wT / 2, L.window.sillH + L.window.h / 2, -winGap / 2 - wfT / 2, M.windowFrame);
+    box(wfD, L.window.h + wfT * 2, wfT, hW + wT / 2, L.window.sillH + L.window.h / 2, winGap / 2 + wfT / 2, M.windowFrame);
+    box(wfD, wfT, winGap + wfT * 2, hW + wT / 2, L.window.sillH - wfT / 2, 0, M.windowFrame);
+    box(wfD, wfT, winGap + wfT * 2, hW + wT / 2, L.window.sillH + L.window.h + wfT / 2, 0, M.windowFrame);
+    // Muntin (cross bars)
+    box(wfD, L.window.h, 0.08, hW + wT / 2, L.window.sillH + L.window.h / 2, 0, M.windowFrame);
+    box(wfD, 0.08, winGap, hW + wT / 2, L.window.sillH + L.window.h / 2, 0, M.windowFrame);
+    // Window sill ledge
+    box(0.6, 0.12, winGap + 0.4, hW + 0.1, L.window.sillH - 0.06, 0, M.windowFrame);
+
+    // East wall (bottom, x = +hW... wait, coordinate check)
+    // In our 3D: x = EW(width), z = NS(length). East wall at x = +hW, runs along z.
+    // Door on East wall, offset from North (z = -hH)
+    const doorZStart = -hH + L.door.offset;
+    const doorZEnd = doorZStart + L.door.width;
+    const afterDoor = L.room.h - L.door.offset - L.door.width;
+
+    // East wall segments
+    if (L.door.offset > 0.1)
+      box(wT, wH, L.door.offset, hW + wT / 2, wH / 2, -hH + L.door.offset / 2, M.wallMain);
+    if (afterDoor > 0.1)
+      box(wT, wH, afterDoor, hW + wT / 2, wH / 2, doorZEnd + afterDoor / 2, M.wallMain);
+    // Lintel
+    box(wT, wH - L.door.height, L.door.width, hW + wT / 2, L.door.height + (wH - L.door.height) / 2, doorZStart + L.door.width / 2, M.wallMain);
+
+    // Door frame
+    const dfT = 0.18;
+    box(dfT + wT, L.door.height, dfT, hW + wT / 4, L.door.height / 2, doorZStart - dfT / 2, M.doorFrame);
+    box(dfT + wT, L.door.height, dfT, hW + wT / 4, L.door.height / 2, doorZEnd + dfT / 2, M.doorFrame);
+    box(dfT + wT, dfT, L.door.width + dfT * 2, hW + wT / 4, L.door.height + dfT / 2, doorZStart + L.door.width / 2, M.doorFrame);
+
+    // Door panels (double panel detail)
+    const doorGroup = new THREE.Group();
+    const doorBase = new THREE.Mesh(new THREE.BoxGeometry(0.12, L.door.height - 0.1, L.door.width - 0.15), M.doorWood);
+    doorBase.castShadow = true; doorBase.receiveShadow = true;
+    doorGroup.add(doorBase);
+    // Panel insets
+    const panelW = (L.door.width - 0.6) / 1;
+    const panelH1 = 2.5, panelH2 = 3;
+    const panelInset = new THREE.MeshStandardMaterial({ color: '#7a5a3a', roughness: 0.6 });
+    const p1 = new THREE.Mesh(new THREE.BoxGeometry(0.04, panelH1, panelW), panelInset);
+    p1.position.set(-0.08, -1.2, 0); doorGroup.add(p1);
+    const p2 = new THREE.Mesh(new THREE.BoxGeometry(0.04, panelH2, panelW), panelInset);
+    p2.position.set(-0.08, 1.8, 0); doorGroup.add(p2);
+    // Door handle
+    const handleMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.5, 16), M.doorHandle);
+    handleMesh.rotation.x = Math.PI / 2;
+    handleMesh.position.set(-0.12, 0, -panelW / 2 + 0.4);
+    doorGroup.add(handleMesh);
+    doorGroup.position.set(hW, L.door.height / 2, doorZStart + L.door.width / 2);
+    doorGroup.rotation.y = 0.35;
+    scene.add(doorGroup);
+
+    // (No ceiling — open top for architectural model view)
+
+    // ─── BASEBOARDS ───
+    const bbH = 0.4, bbD = 0.08;
+    // West baseboard
+    box(L.room.w, bbH, bbD, 0, bbH / 2, -hH + bbD / 2, M.baseboard);
+    // East baseboard (skip door)
+    if (L.door.offset > 0.3)
+      box(bbD, bbH, L.door.offset - 0.2, hW - bbD / 2, bbH / 2, -hH + (L.door.offset - 0.2) / 2, M.baseboard);
+    box(bbD, bbH, afterDoor - 0.2, hW - bbD / 2, bbH / 2, doorZEnd + 0.1 + (afterDoor - 0.2) / 2, M.baseboard);
+    // North baseboard
+    box(bbD, bbH, L.room.h, -hW + bbD / 2, bbH / 2, 0, M.baseboard);
+
+    // ─── PILLARS (concrete with subtle edge) — NW and SW corners matching 2D ───
+    // Pillar 1: NW corner (West wall, North end)
+    box(L.pillar.size, wH, L.pillar.size, -hW + L.pillar.size / 2, wH / 2, -hH + L.pillar.size / 2, M.pillarMat);
+    // Pillar 2: SW corner (West wall, South end) — matches 2D blueprint
+    box(L.pillar.size, wH, L.pillar.size, -hW + L.pillar.size / 2, wH / 2, hH - L.pillar.size / 2, M.pillarMat);
+    // Pillar cap trim
+    box(L.pillar.size + 0.1, 0.12, L.pillar.size + 0.1, -hW + L.pillar.size / 2, wH - 0.06, -hH + L.pillar.size / 2, M.baseboard);
+    box(L.pillar.size + 0.1, 0.12, L.pillar.size + 0.1, -hW + L.pillar.size / 2, wH - 0.06, hH - L.pillar.size / 2, M.baseboard);
+
+    // ═══════════════════════════════════════
+    //  KITCHEN ELEMENTS
+    // ═══════════════════════════════════════
+    const cH = 3; // counter height (3 feet = ~36 inches)
+    const cD = L.counter.depth;
+
+    // ─── NE COUNTER (SINK AREA) — matches 2D: center z=-hH+3, L=5 ───
+    // Lower cabinet box
+    box(cD, cH - 0.15, 5, hW - cD / 2, (cH - 0.15) / 2, -hH + 3, M.counterBase);
+    // Countertop slab
+    box(cD + 0.15, 0.15, 5.15, hW - cD / 2, cH - 0.075, -hH + 3, M.counterTop);
+    // Cabinet doors (3 doors)
+    for (let ci = 0; ci < 3; ci++) {
+      const cdZ = -hH + 1.2 + ci * 1.6;
+      box(0.06, 2, 1.3, hW - cD + 0.03, cH / 2 - 0.2, cdZ, M.cabinetDoor);
+      // Handle
+      cyl(0.03, 0.6, hW - cD - 0.02, cH / 2 - 0.2, cdZ - 0.3, M.cabinetHandle);
+    }
+    // Backsplash
+    box(0.12, 1.5, 5, hW - 0.06, cH + 0.75, -hH + 3, M.backsplash);
+
+    // ─── SECOND EAST WALL COUNTER (between sink and door) — matches 2D: center z=-hH+6, L=4 ───
+    box(cD, cH - 0.15, 4, hW - cD / 2, (cH - 0.15) / 2, -hH + 6, M.counterBase);
+    box(cD + 0.15, 0.15, 4.15, hW - cD / 2, cH - 0.075, -hH + 6, M.counterTop);
+    for (let ci = 0; ci < 2; ci++) {
+      const cdZ = -hH + 5 + ci * 1.6;
+      box(0.06, 2, 1.3, hW - cD + 0.03, cH / 2 - 0.2, cdZ, M.cabinetDoor);
+      cyl(0.03, 0.6, hW - cD - 0.02, cH / 2 - 0.2, cdZ - 0.3, M.cabinetHandle);
+    }
+    box(0.12, 1.5, 4, hW - 0.06, cH + 0.75, -hH + 6, M.backsplash);
+
+    // ─── TWO-SLAB STAINLESS STEEL SINK ───
+    const sinkCX = hW - cD / 2;
+    // Basin 1
+    box(1.2, 0.4, 1.1, sinkCX, cH - 0.35, -hH + 2, M.sinkBowl);
+    // Basin rim 1
+    box(1.4, 0.06, 1.3, sinkCX, cH - 0.1, -hH + 2, M.sinkRim);
+    // Basin 2
+    box(1.2, 0.4, 1.1, sinkCX, cH - 0.35, -hH + 3.5, M.sinkBowl);
+    // Basin rim 2
+    box(1.4, 0.06, 1.3, sinkCX, cH - 0.1, -hH + 3.5, M.sinkRim);
+    // Divider between basins
+    box(1.2, 0.3, 0.08, sinkCX, cH - 0.3, -hH + 2.75, M.sinkRim);
+
+    // Faucet assembly
+    // Base
+    cyl(0.08, 0.3, sinkCX, cH + 0.15, -hH + 2.75, M.faucetMat);
+    // Vertical pipe
+    cyl(0.04, 1.0, sinkCX, cH + 0.5, -hH + 2.75, M.faucetMat);
+    // Spout (horizontal)
+    box(0.08, 0.08, 0.6, sinkCX, cH + 1.0, -hH + 2.75 + 0.25, M.faucetMat);
+    // Spout tip
+    cyl(0.03, 0.15, sinkCX, cH + 0.95, -hH + 2.75 + 0.52, M.faucetMat);
+    // Handles
+    cyl(0.025, 0.2, sinkCX - 0.15, cH + 0.3, -hH + 2.75, M.faucetMat);
+    cyl(0.025, 0.2, sinkCX + 0.15, cH + 0.3, -hH + 2.75, M.faucetMat);
+    // Handle tops
+    box(0.12, 0.04, 0.04, sinkCX - 0.15, cH + 0.42, -hH + 2.75, M.faucetMat);
+    box(0.12, 0.04, 0.04, sinkCX + 0.15, cH + 0.42, -hH + 2.75, M.faucetMat);
+
+    // ─── UPPER CABINETS (above NE sink area + second counter) ───
+    const ucBottom = 5.5, ucH = 2.5, ucD = 1.2;
+    // Above sink area
+    box(ucD, ucH, 5, hW - ucD / 2, ucBottom + ucH / 2, -hH + 3, M.upperCab);
+    for (let ci = 0; ci < 3; ci++) {
+      const cdZ = -hH + 1.2 + ci * 1.6;
+      box(0.05, ucH - 0.2, 1.3, hW - ucD + 0.025, ucBottom + ucH / 2, cdZ, M.cabinetDoor);
+      cyl(0.025, 0.4, hW - ucD - 0.02, ucBottom + ucH / 2, cdZ - 0.3, M.cabinetHandle);
+    }
+    // Above second counter section
+    box(ucD, ucH, 4, hW - ucD / 2, ucBottom + ucH / 2, -hH + 6, M.upperCab);
+    for (let ci = 0; ci < 2; ci++) {
+      const cdZ = -hH + 5 + ci * 1.6;
+      box(0.05, ucH - 0.2, 1.3, hW - ucD + 0.025, ucBottom + ucH / 2, cdZ, M.cabinetDoor);
+      cyl(0.025, 0.4, hW - ucD - 0.02, ucBottom + ucH / 2, cdZ - 0.3, M.cabinetHandle);
+    }
+
+    // ─── SE COUNTER (STOVE AREA) — matches 2D: center z=hH-7, L=4 ───
+    const stoveAreaZ = hH - 7;
+    // Lower cabinet
+    box(cD, cH - 0.15, 4, hW - cD / 2, (cH - 0.15) / 2, stoveAreaZ, M.counterBase);
+    // Countertop
+    box(cD + 0.15, 0.15, 4.15, hW - cD / 2, cH - 0.075, stoveAreaZ, M.counterTop);
+    // Cabinet doors (2 doors)
+    for (let ci = 0; ci < 2; ci++) {
+      const cdZ = stoveAreaZ - 1.2 + ci * 1.6;
+      box(0.06, 2, 1.3, hW - cD + 0.03, cH / 2 - 0.2, cdZ, M.cabinetDoor);
+      cyl(0.03, 0.6, hW - cD - 0.02, cH / 2 - 0.2, cdZ - 0.3, M.cabinetHandle);
+    }
+    // Backsplash
+    box(0.12, 1.5, 4, hW - 0.06, cH + 0.75, stoveAreaZ, M.backsplash);
+
+    // ─── STOVE COUNTER (under stove) — matches 2D: stove center z=hH-4, L=2 ───
+    box(cD, cH - 0.15, L.stove.d, hW - cD / 2, (cH - 0.15) / 2, hH - 4, M.counterBase);
+    box(cD + 0.15, 0.15, L.stove.d + 0.15, hW - cD / 2, cH - 0.075, hH - 4, M.counterTop);
+    box(0.12, 1.5, L.stove.d, hW - 0.06, cH + 0.75, hH - 4, M.backsplash);
+
+    // ─── GAS STOVE / HOB — matches 2D: center z=hH-4 ───
+    const stoveCX = hW - cD / 2;
+    const stoveCZ = hH - 4;
+    // Stove surface
+    box(L.stove.w, 0.08, L.stove.d, stoveCX, cH + 0.04, stoveCZ, M.stoveTop);
+    // Steel frame
+    box(L.stove.w + 0.1, 0.12, L.stove.d + 0.1, stoveCX, cH + 0.01, stoveCZ, M.sinkRim);
+    // 4 Burners with grates
+    const burnerPos = [[-0.5, -0.4], [0.5, -0.4], [-0.5, 0.4], [0.5, 0.4]];
+    burnerPos.forEach(([bx, bz]) => {
+      // Burner ring
+      torus(0.22, 0.025, stoveCX + bx, cH + 0.12, stoveCZ + bz, M.burnerRing);
+      // Inner ring
+      torus(0.1, 0.02, stoveCX + bx, cH + 0.12, stoveCZ + bz, M.burnerRing);
+      // Grate bars (cross)
+      box(0.5, 0.05, 0.04, stoveCX + bx, cH + 0.16, stoveCZ + bz, M.burnerGrate);
+      box(0.04, 0.05, 0.5, stoveCX + bx, cH + 0.16, stoveCZ + bz, M.burnerGrate);
+    });
+    // Knobs (on the front face)
+    for (let ki = 0; ki < 4; ki++) {
+      const knobZ = stoveCZ - 0.6 + ki * 0.4;
+      cyl(0.06, 0.15, stoveCX + L.stove.w / 2 + 0.02, cH - 0.4, knobZ, M.knob);
+    }
+
+    // ─── CHIMNEY HOOD (tapered stainless) ───
+    const chimneyX = stoveCX, chimneyZ = stoveCZ;
+    // Main hood (trapezoid shape using custom geometry)
+    const hoodW1 = L.stove.w + 0.8, hoodW2 = 1.0; // bottom wider, top narrow
+    const hoodD1 = L.stove.d + 0.4, hoodD2 = 0.6;
+    const hoodH = 1.2;
+    const hoodGeo = new THREE.BufferGeometry();
+    const hv = [ // 8 vertices of a truncated pyramid
+      // Bottom face (wider)
+      chimneyX - hoodW1 / 2, cH + 1.8, chimneyZ - hoodD1 / 2,
+      chimneyX + hoodW1 / 2, cH + 1.8, chimneyZ - hoodD1 / 2,
+      chimneyX + hoodW1 / 2, cH + 1.8, chimneyZ + hoodD1 / 2,
+      chimneyX - hoodW1 / 2, cH + 1.8, chimneyZ + hoodD1 / 2,
+      // Top face (narrower)
+      chimneyX - hoodW2 / 2, cH + 1.8 + hoodH, chimneyZ - hoodD2 / 2,
+      chimneyX + hoodW2 / 2, cH + 1.8 + hoodH, chimneyZ - hoodD2 / 2,
+      chimneyX + hoodW2 / 2, cH + 1.8 + hoodH, chimneyZ + hoodD2 / 2,
+      chimneyX - hoodW2 / 2, cH + 1.8 + hoodH, chimneyZ + hoodD2 / 2,
+    ];
+    const hIdx = [
+      0, 1, 5, 0, 5, 4, // front
+      1, 2, 6, 1, 6, 5, // right
+      2, 3, 7, 2, 7, 6, // back
+      3, 0, 4, 3, 4, 7, // left
+      4, 5, 6, 4, 6, 7, // top
+      0, 3, 2, 0, 2, 1, // bottom
+    ];
+    hoodGeo.setAttribute('position', new THREE.Float32BufferAttribute(hv, 3));
+    hoodGeo.setIndex(hIdx);
+    hoodGeo.computeVertexNormals();
+    const hoodMesh = new THREE.Mesh(hoodGeo, M.chimneyMat);
+    hoodMesh.castShadow = true; hoodMesh.receiveShadow = true;
+    scene.add(hoodMesh);
+
+    // Chimney duct (pipe to ceiling)
+    box(0.7, wH - (cH + 3), 0.5, chimneyX, (cH + 3 + wH) / 2, chimneyZ, M.chimneyMat);
+    // Filter grille at bottom of hood
+    box(hoodW1 - 0.3, 0.05, hoodD1 - 0.2, chimneyX, cH + 1.82, chimneyZ, M.chimneyFilter);
+    // Hood LED strip
+    const ledMat = new THREE.MeshStandardMaterial({ color: '#fff8e0', emissive: '#fff0c0', emissiveIntensity: 0.5 });
+    box(hoodW1 - 0.4, 0.03, 0.06, chimneyX, cH + 1.84, chimneyZ - hoodD1 / 2 + 0.15, ledMat);
+
+    // ─── UPPER CABINETS (above stove area - smaller, beside chimney) ───
+    // One on each side of the chimney
+    box(ucD, ucH, 1.2, hW - ucD / 2, ucBottom + ucH / 2, stoveAreaZ, M.upperCab);
+    box(0.05, ucH - 0.2, 1, hW - ucD + 0.025, ucBottom + ucH / 2, stoveAreaZ, M.cabinetDoor);
+    box(ucD, ucH, 1.2, hW - ucD / 2, ucBottom + ucH / 2, hH - 2.5, M.upperCab);
+    box(0.05, ucH - 0.2, 1, hW - ucD + 0.025, ucBottom + ucH / 2, hH - 2.5, M.cabinetDoor);
+
+    // ─── FRIDGE (SW corner) ───
+    const fX = -hW + L.fridge.w / 2 + 0.3;
+    const fZ = hH - L.fridge.d / 2 - 0.3;
+    // Main body
+    box(L.fridge.w, 6.5, L.fridge.d, fX, 6.5 / 2, fZ, M.fridgeBody);
+    // Freezer line
+    box(L.fridge.w + 0.02, 0.04, L.fridge.d + 0.02, fX, 4.5, fZ, M.cabinetHandle);
+    // Handles
+    box(0.08, 1.5, 0.08, fX - L.fridge.w / 2 - 0.06, 5.5, fZ - L.fridge.d / 2 + 0.3, M.fridgeHandle);
+    box(0.08, 1, 0.08, fX - L.fridge.w / 2 - 0.06, 3.5, fZ - L.fridge.d / 2 + 0.3, M.fridgeHandle);
+    // Top of fridge
+    box(L.fridge.w + 0.04, 0.08, L.fridge.d + 0.04, fX, 6.54, fZ, M.cabinetHandle);
+
+    // ─── PANTRY / SHELVING (NW area) — matches 2D: center z=-hH+4 ───
+    const pX = -hW + L.pantry.w / 2 + 0.3;
+    const pZ = -hH + 4;
+    // Frame
+    box(L.pantry.w, 7, 0.12, pX, 3.5, pZ - 2 + 0.06, M.pantryBody);
+    box(L.pantry.w, 7, 0.12, pX, 3.5, pZ + 2 - 0.06, M.pantryBody);
+    box(0.12, 7, 4, pX - L.pantry.w / 2 + 0.06, 3.5, pZ, M.pantryBody);
+    // Shelves
+    for (let si = 0; si < 5; si++) {
+      box(L.pantry.w - 0.1, 0.1, 3.9, pX, 0.5 + si * 1.5, pZ, M.pantryShelf);
+    }
+
+    // ─── WEST WALL COUNTER (Prep area) ───
+    box(cD, cH - 0.15, 5, -hW + cD / 2 + 0.2, (cH - 0.15) / 2, 2, M.counterBase);
+    box(cD + 0.15, 0.15, 5.15, -hW + cD / 2 + 0.2, cH - 0.075, 2, M.counterTop);
+    // Cabinet doors
+    for (let ci = 0; ci < 3; ci++) {
+      const cdZ = 0.2 + ci * 1.6;
+      box(0.06, 2, 1.3, -hW + cD + 0.17, cH / 2 - 0.2, cdZ, M.cabinetDoor);
+      cyl(0.03, 0.6, -hW + cD + 0.22, cH / 2 - 0.2, cdZ + 0.3, M.cabinetHandle);
+    }
+    // Backsplash
+    box(0.12, 1.5, 5, -hW + 0.26, cH + 0.75, 2, M.backsplash);
+
+    // Upper cabinets on west wall
+    box(ucD, ucH, 5, -hW + ucD / 2 + 0.2, ucBottom + ucH / 2, 2, M.upperCab);
+    for (let ci = 0; ci < 3; ci++) {
+      const cdZ = 0.2 + ci * 1.6;
+      box(0.05, ucH - 0.2, 1.3, -hW + ucD + 0.175, ucBottom + ucH / 2, cdZ, M.cabinetDoor);
+      cyl(0.025, 0.4, -hW + ucD + 0.22, ucBottom + ucH / 2, cdZ + 0.3, M.cabinetHandle);
+    }
+
+    // ─── GROUND PLANE (outside room, for shadow) ───
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: '#c8bca8', roughness: 1 }));
+    ground.rotation.x = -Math.PI / 2; ground.position.y = -0.02; ground.receiveShadow = true; scene.add(ground);
+
+    // ─── ANIMATE 3D ───
+    function anim3D() {
+      requestAnimationFrame(anim3D);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    anim3D();
+
+    // ═══════════════════════════════════════════
+    //  VIEW TOGGLE
+    // ═══════════════════════════════════════════
+    const btn2d = document.getElementById('btn-2d');
+    const btn3d = document.getElementById('btn-3d');
+    let currentView = '2d';
+
+    function setView(v) {
+      currentView = v;
+      c2d.style.display = v === '2d' ? 'block' : 'none';
+      c3d.style.display = v === '3d' ? 'block' : 'none';
+      btn2d.classList.toggle('active', v === '2d');
+      btn3d.classList.toggle('active', v === '3d');
+      controls.enabled = (v === '3d');
+    }
+
+    btn2d.addEventListener('click', () => setView('2d'));
+    btn3d.addEventListener('click', () => setView('3d'));
+    setView('2d');
+
+    // Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+
+</html>

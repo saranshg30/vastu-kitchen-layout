@@ -826,10 +826,10 @@
     sun.shadow.radius = 3;
     scene.add(sun);
 
-    // Window light (from South wall)
+    // Window light (from North wall)
     const winLight = new THREE.SpotLight(0xddeeff, 0.6, 20, Math.PI / 4, 0.5);
-    winLight.position.set(0, 5, -hH - 2);
-    winLight.target.position.set(0, 2, -hH + 4);
+    winLight.position.set(0, 5, hH + 2);
+    winLight.target.position.set(0, 2, hH - 4);
     scene.add(winLight); scene.add(winLight.target);
 
     // Under-cabinet warm lights
@@ -930,27 +930,27 @@
     // West wall (left in 3D, x = -hW) — full, runs length of Z
     box(wT, wH, L.room.h, -hW - wT/2, wH/2, 0, M.wallMain);
 
-    // South wall physically at scene -Z. 
-    // Since box() negates Z, we pass +hH.
+    // North wall physically at scene +Z. 
+    // Since box() negates Z, we pass -hH.
     const winGap = L.window.width;
     const sideLen = (L.room.w - winGap) / 2;
-    box(sideLen, wH, wT, -hW + sideLen/2, wH/2, hH + wT/2, M.wallAccent);
-    box(sideLen, wH, wT, hW - sideLen/2, wH/2, hH + wT/2, M.wallAccent);
-    box(winGap, L.window.sillH, wT, 0, L.window.sillH/2, hH + wT/2, M.wallAccent);
-    box(winGap, wH - L.window.sillH - L.window.h, wT, 0, L.window.sillH + L.window.h + (wH - L.window.sillH - L.window.h)/2, hH + wT/2, M.wallAccent);
+    box(sideLen, wH, wT, -hW + sideLen/2, wH/2, -hH - wT/2, M.wallAccent);
+    box(sideLen, wH, wT, hW - sideLen/2, wH/2, -hH - wT/2, M.wallAccent);
+    box(winGap, L.window.sillH, wT, 0, L.window.sillH/2, -hH - wT/2, M.wallAccent);
+    box(winGap, wH - L.window.sillH - L.window.h, wT, 0, L.window.sillH + L.window.h + (wH - L.window.sillH - L.window.h)/2, -hH - wT/2, M.wallAccent);
 
     // Window glass
-    box(winGap, L.window.h, 0.08, 0, L.window.sillH + L.window.h/2, hH + wT/2, M.glass);
+    box(winGap, L.window.h, 0.08, 0, L.window.sillH + L.window.h/2, -hH - wT/2, M.glass);
     
     // Window frame
     const wfT = 0.15, wfD = 0.2;
-    box(wfT, L.window.h + wfT*2, wfD, -winGap/2 - wfT/2, L.window.sillH + L.window.h/2, hH + wT/2, M.windowFrame);
-    box(wfT, L.window.h + wfT*2, wfD, winGap/2 + wfT/2, L.window.sillH + L.window.h/2, hH + wT/2, M.windowFrame);
-    box(winGap + wfT*2, wfT, wfD, 0, L.window.sillH - wfT/2, hH + wT/2, M.windowFrame);
-    box(winGap + wfT*2, wfT, wfD, 0, L.window.sillH + L.window.h + wfT/2, hH + wT/2, M.windowFrame);
-    box(0.08, L.window.h, wfD, 0, L.window.sillH + L.window.h/2, hH + wT/2, M.windowFrame);
-    box(winGap, 0.08, wfD, 0, L.window.sillH + L.window.h/2, hH + wT/2, M.windowFrame);
-    box(winGap + 0.4, 0.12, 0.6, 0, L.window.sillH - 0.06, hH + wT/2 - 0.1, M.windowFrame);
+    box(wfT, L.window.h + wfT*2, wfD, -winGap/2 - wfT/2, L.window.sillH + L.window.h/2, -hH - wT/2, M.windowFrame);
+    box(wfT, L.window.h + wfT*2, wfD, winGap/2 + wfT/2, L.window.sillH + L.window.h/2, -hH - wT/2, M.windowFrame);
+    box(winGap + wfT*2, wfT, wfD, 0, L.window.sillH - wfT/2, -hH - wT/2, M.windowFrame);
+    box(winGap + wfT*2, wfT, wfD, 0, L.window.sillH + L.window.h + wfT/2, -hH - wT/2, M.windowFrame);
+    box(0.08, L.window.h, wfD, 0, L.window.sillH + L.window.h/2, -hH - wT/2, M.windowFrame);
+    box(winGap, 0.08, wfD, 0, L.window.sillH + L.window.h/2, -hH - wT/2, M.windowFrame);
+    box(winGap + 0.4, 0.12, 0.6, 0, L.window.sillH - 0.06, -hH - wT/2 + 0.1, M.windowFrame);
 
     // East wall (right in 3D, x = +hW) — with door
     // Scene physical Door offset from North (+Z).
@@ -1003,8 +1003,8 @@
     const bbH = 0.4, bbD = 0.08;
     // West baseboard
     box(bbD, bbH, L.room.h, -hW + bbD/2, bbH/2, 0, M.baseboard);
-    // South baseboard (far scene -Z). We pass +hH.
-    box(L.room.w, bbH, bbD, 0, bbH/2, hH - bbD/2, M.baseboard);
+    // North baseboard (far scene +Z). We pass -hH.
+    box(L.room.w, bbH, bbD, 0, bbH/2, -hH + bbD/2, M.baseboard);
     // East baseboard (skip door)
     if (L.door.offset > 0.3)
       box(bbD, bbH, L.door.offset - 0.2, hW - bbD/2, bbH/2, -hH + (L.door.offset - 0.2)/2, M.baseboard);

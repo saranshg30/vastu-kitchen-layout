@@ -816,7 +816,7 @@
     scene.add(new THREE.HemisphereLight(0xffeedd, 0xd4c4a8, 0.35));
 
     const sun = new THREE.DirectionalLight(0xfff0d4, 0.65);
-    sun.position.set(ns3D(10), 22, -8);
+    sun.position.set(10, 22, ns3D(-8));
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
     sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 60;
@@ -828,20 +828,20 @@
 
     // Window light (from South wall)
     const winLight = new THREE.SpotLight(0xddeeff, 0.6, 20, Math.PI / 4, 0.5);
-    winLight.position.set(ns3D(hW + 2), 5, 0);
-    winLight.target.position.set(0, 2, 0);
+    winLight.position.set(0, 5, -hH - 2);
+    winLight.target.position.set(0, 2, -hH + 4);
     scene.add(winLight); scene.add(winLight.target);
 
     // Under-cabinet warm lights
     const kitchenLight1 = new THREE.PointLight(0xffcc88, 0.4, 8, 2);
-    kitchenLight1.position.set(ns3D(hW - 1.2), 5.5, -hH + 3);
+    kitchenLight1.position.set(hW - 1.2, 5.5, ns3D(-hH + 3));
     scene.add(kitchenLight1);
     const kitchenLight2 = new THREE.PointLight(0xffcc88, 0.4, 8, 2);
-    kitchenLight2.position.set(ns3D(hW - 1.2), 5.5, hH - 5);
+    kitchenLight2.position.set(hW - 1.2, 5.5, ns3D(hH - 5));
     scene.add(kitchenLight2);
     // Pantry area
     const kitchenLight3 = new THREE.PointLight(0xffe0aa, 0.3, 8, 2);
-    kitchenLight3.position.set(ns3D(-hW + 1.5), 5, -hH + 3);
+    kitchenLight3.position.set(-hW + 1.5, 5, ns3D(-hH + 3));
     scene.add(kitchenLight3);
 
     // ─── MATERIALS (PBR-quality) ───
@@ -890,17 +890,17 @@
     // ─── HELPER FUNCTIONS ───
     function box(w, h, d, x, y, z, mat) {
       const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
-      m.position.set(ns3D(x), y, z); m.castShadow = true; m.receiveShadow = true;
+      m.position.set(x, y, ns3D(z)); m.castShadow = true; m.receiveShadow = true;
       scene.add(m); return m;
     }
     function cyl(r, h, x, y, z, mat, seg) {
       const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg || 32), mat);
-      m.position.set(ns3D(x), y, z); m.castShadow = true; m.receiveShadow = true;
+      m.position.set(x, y, ns3D(z)); m.castShadow = true; m.receiveShadow = true;
       scene.add(m); return m;
     }
     function torus(r, tube, x, y, z, mat) {
       const m = new THREE.Mesh(new THREE.TorusGeometry(r, tube, 16, 48), mat);
-      m.position.set(ns3D(x), y, z); m.rotation.x = Math.PI / 2;
+      m.position.set(x, y, ns3D(z)); m.rotation.x = Math.PI / 2;
       m.castShadow = true; scene.add(m); return m;
     }
 
@@ -915,7 +915,7 @@
         const td = Math.min(tileSize, hH - fz);
         const tile = new THREE.Mesh(new THREE.PlaneGeometry(tw, td), mat);
         tile.rotation.x = -Math.PI / 2;
-        tile.position.set(ns3D(fx + tw / 2), 0.001, fz + td / 2);
+        tile.position.set(fx + tw / 2, 0.001, ns3D(fz + td / 2));
         tile.receiveShadow = true;
         scene.add(tile);
       }
@@ -927,60 +927,60 @@
     // ─── WALLS ───
     const wH = L.room.wallH, wT = L.room.t;
 
-    // West wall (top of sketch, z = -hH) — full
-    box(L.room.w + wT * 2, wH, wT, 0, wH / 2, -hH - wT / 2, M.wallMain);
-    // North wall (left, x = -hW) — full
-    box(wT, wH, L.room.h, -hW - wT / 2, wH / 2, 0, M.wallMain);
+    // West wall (left in 3D, x = -hW) — full, runs length of Z
+    box(wT, wH, L.room.h, -hW - wT/2, wH/2, 0, M.wallMain);
 
-    // South wall (right, x = +hW) — with window
+    // South wall physically at scene -Z. 
+    // Since box() negates Z, we pass +hH.
     const winGap = L.window.width;
-    const sideLen = (L.room.h - winGap) / 2;
-    box(wT, wH, sideLen, hW + wT / 2, wH / 2, -hH + sideLen / 2, M.wallAccent);
-    box(wT, wH, sideLen, hW + wT / 2, wH / 2, hH - sideLen / 2, M.wallAccent);
-    box(wT, L.window.sillH, winGap, hW + wT / 2, L.window.sillH / 2, 0, M.wallAccent);
-    box(wT, wH - L.window.sillH - L.window.h, winGap, hW + wT / 2, L.window.sillH + L.window.h + (wH - L.window.sillH - L.window.h) / 2, 0, M.wallAccent);
+    const sideLen = (L.room.w - winGap) / 2;
+    box(sideLen, wH, wT, -hW + sideLen/2, wH/2, hH + wT/2, M.wallAccent);
+    box(sideLen, wH, wT, hW - sideLen/2, wH/2, hH + wT/2, M.wallAccent);
+    box(winGap, L.window.sillH, wT, 0, L.window.sillH/2, hH + wT/2, M.wallAccent);
+    box(winGap, wH - L.window.sillH - L.window.h, wT, 0, L.window.sillH + L.window.h + (wH - L.window.sillH - L.window.h)/2, hH + wT/2, M.wallAccent);
 
     // Window glass
-    box(0.08, L.window.h, winGap, hW + wT / 2, L.window.sillH + L.window.h / 2, 0, M.glass);
+    box(winGap, L.window.h, 0.08, 0, L.window.sillH + L.window.h/2, hH + wT/2, M.glass);
+    
     // Window frame
     const wfT = 0.15, wfD = 0.2;
-    box(wfD, L.window.h + wfT * 2, wfT, hW + wT / 2, L.window.sillH + L.window.h / 2, -winGap / 2 - wfT / 2, M.windowFrame);
-    box(wfD, L.window.h + wfT * 2, wfT, hW + wT / 2, L.window.sillH + L.window.h / 2, winGap / 2 + wfT / 2, M.windowFrame);
-    box(wfD, wfT, winGap + wfT * 2, hW + wT / 2, L.window.sillH - wfT / 2, 0, M.windowFrame);
-    box(wfD, wfT, winGap + wfT * 2, hW + wT / 2, L.window.sillH + L.window.h + wfT / 2, 0, M.windowFrame);
-    // Muntin (cross bars)
-    box(wfD, L.window.h, 0.08, hW + wT / 2, L.window.sillH + L.window.h / 2, 0, M.windowFrame);
-    box(wfD, 0.08, winGap, hW + wT / 2, L.window.sillH + L.window.h / 2, 0, M.windowFrame);
-    // Window sill ledge
-    box(0.6, 0.12, winGap + 0.4, hW + 0.1, L.window.sillH - 0.06, 0, M.windowFrame);
+    box(wfT, L.window.h + wfT*2, wfD, -winGap/2 - wfT/2, L.window.sillH + L.window.h/2, hH + wT/2, M.windowFrame);
+    box(wfT, L.window.h + wfT*2, wfD, winGap/2 + wfT/2, L.window.sillH + L.window.h/2, hH + wT/2, M.windowFrame);
+    box(winGap + wfT*2, wfT, wfD, 0, L.window.sillH - wfT/2, hH + wT/2, M.windowFrame);
+    box(winGap + wfT*2, wfT, wfD, 0, L.window.sillH + L.window.h + wfT/2, hH + wT/2, M.windowFrame);
+    box(0.08, L.window.h, wfD, 0, L.window.sillH + L.window.h/2, hH + wT/2, M.windowFrame);
+    box(winGap, 0.08, wfD, 0, L.window.sillH + L.window.h/2, hH + wT/2, M.windowFrame);
+    box(winGap + 0.4, 0.12, 0.6, 0, L.window.sillH - 0.06, hH + wT/2 - 0.1, M.windowFrame);
 
-    // East wall (bottom, x = +hW... wait, coordinate check)
-    // In our 3D: x = EW(width), z = NS(length). East wall at x = +hW, runs along z.
-    // Door on East wall, offset from North (z = -hH)
+    // East wall (right in 3D, x = +hW) — with door
+    // Scene physical Door offset from North (+Z).
+    // So scene door starts at +hH - L.door.offset and goes towards -Z.
+    // To achieve scene Z of (+hH - offset), we pass (-hH + offset) to box().
     const doorZStart = -hH + L.door.offset;
     const doorZEnd = doorZStart + L.door.width;
     const afterDoor = L.room.h - L.door.offset - L.door.width;
 
     // East wall segments
+    // segment 1: near North (scene +hH). We pass -hH to -hH+offset.
     if (L.door.offset > 0.1)
-      box(wT, wH, L.door.offset, hW + wT / 2, wH / 2, -hH + L.door.offset / 2, M.wallMain);
+      box(wT, wH, L.door.offset, hW + wT/2, wH/2, -hH + L.door.offset/2, M.wallMain);
+    // segment 2: near South (scene -hH). We pass offset+width to +hH.
     if (afterDoor > 0.1)
-      box(wT, wH, afterDoor, hW + wT / 2, wH / 2, doorZEnd + afterDoor / 2, M.wallMain);
+      box(wT, wH, afterDoor, hW + wT/2, wH/2, doorZEnd + afterDoor/2, M.wallMain);
     // Lintel
-    box(wT, wH - L.door.height, L.door.width, hW + wT / 2, L.door.height + (wH - L.door.height) / 2, doorZStart + L.door.width / 2, M.wallMain);
+    box(wT, wH - L.door.height, L.door.width, hW + wT/2, L.door.height + (wH - L.door.height)/2, doorZStart + L.door.width/2, M.wallMain);
 
     // Door frame
     const dfT = 0.18;
-    box(dfT + wT, L.door.height, dfT, hW + wT / 4, L.door.height / 2, doorZStart - dfT / 2, M.doorFrame);
-    box(dfT + wT, L.door.height, dfT, hW + wT / 4, L.door.height / 2, doorZEnd + dfT / 2, M.doorFrame);
-    box(dfT + wT, dfT, L.door.width + dfT * 2, hW + wT / 4, L.door.height + dfT / 2, doorZStart + L.door.width / 2, M.doorFrame);
+    box(dfT + wT, L.door.height, dfT, hW + wT/4, L.door.height/2, doorZStart - dfT/2, M.doorFrame);
+    box(dfT + wT, L.door.height, dfT, hW + wT/4, L.door.height/2, doorZEnd + dfT/2, M.doorFrame);
+    box(dfT + wT, dfT, L.door.width + dfT*2, hW + wT/4, L.door.height + dfT/2, doorZStart + L.door.width/2, M.doorFrame);
 
-    // Door panels (double panel detail)
+    // Door panels
     const doorGroup = new THREE.Group();
     const doorBase = new THREE.Mesh(new THREE.BoxGeometry(0.12, L.door.height - 0.1, L.door.width - 0.15), M.doorWood);
     doorBase.castShadow = true; doorBase.receiveShadow = true;
     doorGroup.add(doorBase);
-    // Panel insets
     const panelW = (L.door.width - 0.6) / 1;
     const panelH1 = 2.5, panelH2 = 3;
     const panelInset = new THREE.MeshStandardMaterial({ color: '#7a5a3a', roughness: 0.6 });
@@ -988,28 +988,32 @@
     p1.position.set(-0.08, -1.2, 0); doorGroup.add(p1);
     const p2 = new THREE.Mesh(new THREE.BoxGeometry(0.04, panelH2, panelW), panelInset);
     p2.position.set(-0.08, 1.8, 0); doorGroup.add(p2);
-    // Door handle
     const handleMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.5, 16), M.doorHandle);
     handleMesh.rotation.x = Math.PI / 2;
-    handleMesh.position.set(-0.12, 0, -panelW / 2 + 0.4);
+    handleMesh.position.set(-0.12, 0, -panelW/2 + 0.4);
     doorGroup.add(handleMesh);
-    doorGroup.position.set(ns3D(hW), L.door.height / 2, doorZStart + L.door.width / 2);
-    doorGroup.rotation.y = -0.35;
+    
+    // Position doorGroup
+    // doorGroup's position is manually added to the scene, so we MUST apply ns3D to its Z explicitly.
+    doorGroup.position.set(hW, L.door.height/2, ns3D(doorZStart + L.door.width/2));
+    doorGroup.rotation.y = 0.35; 
     scene.add(doorGroup);
-
-    // (No ceiling — open top for architectural model view)
 
     // ─── BASEBOARDS ───
     const bbH = 0.4, bbD = 0.08;
     // West baseboard
-    box(L.room.w, bbH, bbD, 0, bbH / 2, -hH + bbD / 2, M.baseboard);
+    box(bbD, bbH, L.room.h, -hW + bbD/2, bbH/2, 0, M.baseboard);
+    // South baseboard (far scene -Z). We pass +hH.
+    box(L.room.w, bbH, bbD, 0, bbH/2, hH - bbD/2, M.baseboard);
     // East baseboard (skip door)
     if (L.door.offset > 0.3)
-      box(bbD, bbH, L.door.offset - 0.2, hW - bbD / 2, bbH / 2, -hH + (L.door.offset - 0.2) / 2, M.baseboard);
-    box(bbD, bbH, afterDoor - 0.2, hW - bbD / 2, bbH / 2, doorZEnd + 0.1 + (afterDoor - 0.2) / 2, M.baseboard);
-    // North baseboard
-    box(bbD, bbH, L.room.h, -hW + bbD / 2, bbH / 2, 0, M.baseboard);
+      box(bbD, bbH, L.door.offset - 0.2, hW - bbD/2, bbH/2, -hH + (L.door.offset - 0.2)/2, M.baseboard);
+    box(bbD, bbH, afterDoor - 0.2, hW - bbD/2, bbH/2, doorZEnd + 0.1 + (afterDoor - 0.2)/2, M.baseboard);
 
+
+
+    
+    
     // ─── PILLARS (concrete with subtle edge) — NW and SW corners matching 2D ───
     // Pillar 1: NW corner (West wall, North end)
     box(L.pillar.size, wH, L.pillar.size, -hW + L.pillar.size / 2, wH / 2, -hH + L.pillar.size / 2, M.pillarMat);
@@ -1149,15 +1153,15 @@
     const hoodGeo = new THREE.BufferGeometry();
     const hv = [ // 8 vertices of a truncated pyramid
       // Bottom face (wider)
-      ns3D(chimneyX - hoodW1 / 2), cH + 1.8, chimneyZ - hoodD1 / 2,
-      ns3D(chimneyX + hoodW1 / 2), cH + 1.8, chimneyZ - hoodD1 / 2,
-      ns3D(chimneyX + hoodW1 / 2), cH + 1.8, chimneyZ + hoodD1 / 2,
-      ns3D(chimneyX - hoodW1 / 2), cH + 1.8, chimneyZ + hoodD1 / 2,
+      chimneyX - hoodW1 / 2, cH + 1.8, ns3D(chimneyZ - hoodD1 / 2),
+      chimneyX + hoodW1 / 2, cH + 1.8, ns3D(chimneyZ - hoodD1 / 2),
+      chimneyX + hoodW1 / 2, cH + 1.8, ns3D(chimneyZ + hoodD1 / 2),
+      chimneyX - hoodW1 / 2, cH + 1.8, ns3D(chimneyZ + hoodD1 / 2),
       // Top face (narrower)
-      ns3D(chimneyX - hoodW2 / 2), cH + 1.8 + hoodH, chimneyZ - hoodD2 / 2,
-      ns3D(chimneyX + hoodW2 / 2), cH + 1.8 + hoodH, chimneyZ - hoodD2 / 2,
-      ns3D(chimneyX + hoodW2 / 2), cH + 1.8 + hoodH, chimneyZ + hoodD2 / 2,
-      ns3D(chimneyX - hoodW2 / 2), cH + 1.8 + hoodH, chimneyZ + hoodD2 / 2,
+      chimneyX - hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ - hoodD2 / 2),
+      chimneyX + hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ - hoodD2 / 2),
+      chimneyX + hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ + hoodD2 / 2),
+      chimneyX - hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ + hoodD2 / 2),
     ];
     const hIdx = [
       0, 1, 5, 0, 5, 4, // front

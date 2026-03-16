@@ -294,8 +294,8 @@
           <h1>⬡ Vastu Kitchen Plan</h1>
           <div class="sub">
             Room: <strong>22.5' × 10.25'</strong> &nbsp;|&nbsp;
-            Orient: <strong>Top=West</strong>, <strong>Right=South</strong><br />
-            Agni (SE) stove • Ishaan (NE) sink • South window ventilation
+            Orient: <strong>Top=West</strong>, <strong>Right=North</strong><br />
+            Agni (SE) stove • Ishaan (NE) sink • North window ventilation
           </div>
           <div class="legend">
             <div class="legend-item">
@@ -382,11 +382,11 @@
 
     function toScreen(xFt, yFt) {
       // x = East-West (room width 10.25), y = North-South (room length 22.5)
-      // On screen: top=West, bottom=East, left=North, right=South
+      // On screen: top=West, bottom=East, left=South, right=North
       // So screen-x maps to N-S (y), screen-y maps to E-W (x)
       const cx = c2d.width / 2 + panX;
       const cy = c2d.height / 2 + panY;
-      return { x: cx + yFt * px(1), y: cy + xFt * px(1) };
+      return { x: cx - yFt * px(1), y: cy + xFt * px(1) };
     }
 
     function drawRect(xFt, yFt, wFt, dFt, fill, stroke, lw) {
@@ -440,7 +440,9 @@
       drawRect(0, 0, L.room.w, L.room.h, '#1a1f35', null);
 
       // Room walls (thick outline)
-      const tl = toScreen(-hW, -hH), br = toScreen(hW, hH);
+      const cA = toScreen(-hW, -hH), cB = toScreen(hW, hH);
+      const tl = { x: Math.min(cA.x, cB.x), y: Math.min(cA.y, cB.y) };
+      const br = { x: Math.max(cA.x, cB.x), y: Math.max(cA.y, cB.y) };
       const rw = br.x - tl.x, rh = br.y - tl.y;
       ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 4;
       ctx.strokeRect(tl.x, tl.y, rw, rh);
@@ -470,7 +472,7 @@
       // Wait - East wall is bottom. Door offset from North (left).
       // East wall = bottom = max x. Door at y from north.
       // Actually let me reconsider the coordinate mapping.
-      // In sketch: Top=West, Bottom=East, Left=North, Right=South
+      // In sketch: Top=West, Bottom=East, Left=South, Right=North
       // Our toScreen: screen-x = N→S (y-axis), screen-y = W→E (x-axis)
       // So East wall is at x=+hW → screen bottom
       // North wall is at y=-hH → screen left
@@ -516,9 +518,11 @@
       ctx.beginPath(); ctx.moveTo(tl.x, tl.y); ctx.lineTo(tl.x, br.y); ctx.stroke();
 
       // East wall (bottom edge) - with door gap
-      // Door at offset 6.25' from North (left side). So gap in screen-x from tl.x + px(6.25)
-      const dsx = tl.x + px(L.door.offset);
-      const dex = dsx + px(L.door.width);
+      // Door offset is measured from North end on East wall; map via model coords
+      const doorStartPt = toScreen(hW, -hH + L.door.offset);
+      const doorEndPt = toScreen(hW, -hH + L.door.offset + L.door.width);
+      const dsx = Math.min(doorStartPt.x, doorEndPt.x);
+      const dex = Math.max(doorStartPt.x, doorEndPt.x);
       ctx.beginPath(); ctx.moveTo(tl.x, br.y); ctx.lineTo(dsx, br.y); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(dex, br.y); ctx.lineTo(br.x, br.y); ctx.stroke();
 
@@ -731,19 +735,19 @@
       ctx.fillStyle = 'rgba(226,232,240,0.4)'; ctx.font = `500 ${9 * zoom}px 'JetBrains Mono'`;
       const dimBot = br.y + px(1.2);
       ctx.setLineDash([3, 3]); ctx.strokeStyle = 'rgba(226,232,240,0.2)';
-      // 6.25' segment
+      // 13.25' segment (South side after N/S swap)
       ctx.beginPath(); ctx.moveTo(tl.x, dimBot); ctx.lineTo(dsx, dimBot); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillText('6.25\'', (tl.x + dsx) / 2 - px(0.4), dimBot + 14);
+      ctx.fillText('13.25\'', (tl.x + dsx) / 2 - px(0.5), dimBot + 14);
       // 3' door
       ctx.fillStyle = '#818cf8';
       ctx.fillText('3\'', (dsx + dex) / 2 - px(0.15), dimBot + 14);
-      // 13.25' segment
+      // 6.25' segment (North side after N/S swap)
       ctx.fillStyle = 'rgba(226,232,240,0.4)';
       ctx.setLineDash([3, 3]);
       ctx.beginPath(); ctx.moveTo(dex, dimBot); ctx.lineTo(br.x, dimBot); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillText('13.25\'', (dex + br.x) / 2 - px(0.5), dimBot + 14);
+      ctx.fillText('6.25\'', (dex + br.x) / 2 - px(0.4), dimBot + 14);
 
       // === COMPASS ROSE ===
       const compassX = br.x + px(3), compassY = tl.y + px(2);
@@ -754,18 +758,18 @@
       ctx.textAlign = 'center';
       ctx.fillText('W', compassX, compassY - cr - 8);
       ctx.fillText('E', compassX, compassY + cr + 16);
-      ctx.fillText('N', compassX - cr - 14, compassY + 5);
-      ctx.fillText('S', compassX + cr + 14, compassY + 5);
+      ctx.fillText('S', compassX - cr - 14, compassY + 5);
+      ctx.fillText('N', compassX + cr + 14, compassY + 5);
       // Draw cross
       ctx.strokeStyle = 'rgba(226,232,240,0.2)'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(compassX, compassY - cr + 4); ctx.lineTo(compassX, compassY + cr - 4); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(compassX - cr + 4, compassY); ctx.lineTo(compassX + cr - 4, compassY); ctx.stroke();
-      // N arrow (North = left = minus x)
+      // N arrow (North = right = plus x)
       ctx.fillStyle = '#6366f1';
       ctx.beginPath();
-      ctx.moveTo(compassX - cr + 4, compassY);
-      ctx.lineTo(compassX - cr + 14, compassY - 5);
-      ctx.lineTo(compassX - cr + 14, compassY + 5);
+      ctx.moveTo(compassX + cr - 4, compassY);
+      ctx.lineTo(compassX + cr - 14, compassY - 5);
+      ctx.lineTo(compassX + cr - 14, compassY + 5);
       ctx.fill();
       ctx.textAlign = 'left';
 
@@ -784,6 +788,7 @@
     const c3d = document.getElementById('canvas-3d');
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#f5ede3');
+    const ns3D = (value) => -value;
 
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 500);
     camera.position.set(-12, 18, 16);
@@ -811,7 +816,7 @@
     scene.add(new THREE.HemisphereLight(0xffeedd, 0xd4c4a8, 0.35));
 
     const sun = new THREE.DirectionalLight(0xfff0d4, 0.65);
-    sun.position.set(10, 22, -8);
+    sun.position.set(10, 22, ns3D(-8));
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
     sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 60;
@@ -829,14 +834,14 @@
 
     // Under-cabinet warm lights
     const kitchenLight1 = new THREE.PointLight(0xffcc88, 0.4, 8, 2);
-    kitchenLight1.position.set(hW - 1.2, 5.5, -hH + 3);
+    kitchenLight1.position.set(hW - 1.2, 5.5, ns3D(-hH + 3));
     scene.add(kitchenLight1);
     const kitchenLight2 = new THREE.PointLight(0xffcc88, 0.4, 8, 2);
-    kitchenLight2.position.set(hW - 1.2, 5.5, hH - 5);
+    kitchenLight2.position.set(hW - 1.2, 5.5, ns3D(hH - 5));
     scene.add(kitchenLight2);
     // Pantry area
     const kitchenLight3 = new THREE.PointLight(0xffe0aa, 0.3, 8, 2);
-    kitchenLight3.position.set(-hW + 1.5, 5, -hH + 3);
+    kitchenLight3.position.set(-hW + 1.5, 5, ns3D(-hH + 3));
     scene.add(kitchenLight3);
 
     // ─── MATERIALS (PBR-quality) ───
@@ -885,17 +890,17 @@
     // ─── HELPER FUNCTIONS ───
     function box(w, h, d, x, y, z, mat) {
       const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
-      m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+      m.position.set(x, y, ns3D(z)); m.castShadow = true; m.receiveShadow = true;
       scene.add(m); return m;
     }
     function cyl(r, h, x, y, z, mat, seg) {
       const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg || 32), mat);
-      m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+      m.position.set(x, y, ns3D(z)); m.castShadow = true; m.receiveShadow = true;
       scene.add(m); return m;
     }
     function torus(r, tube, x, y, z, mat) {
       const m = new THREE.Mesh(new THREE.TorusGeometry(r, tube, 16, 48), mat);
-      m.position.set(x, y, z); m.rotation.x = Math.PI / 2;
+      m.position.set(x, y, ns3D(z)); m.rotation.x = Math.PI / 2;
       m.castShadow = true; scene.add(m); return m;
     }
 
@@ -910,7 +915,7 @@
         const td = Math.min(tileSize, hH - fz);
         const tile = new THREE.Mesh(new THREE.PlaneGeometry(tw, td), mat);
         tile.rotation.x = -Math.PI / 2;
-        tile.position.set(fx + tw / 2, 0.001, fz + td / 2);
+        tile.position.set(fx + tw / 2, 0.001, ns3D(fz + td / 2));
         tile.receiveShadow = true;
         scene.add(tile);
       }
@@ -988,8 +993,8 @@
     handleMesh.rotation.x = Math.PI / 2;
     handleMesh.position.set(-0.12, 0, -panelW / 2 + 0.4);
     doorGroup.add(handleMesh);
-    doorGroup.position.set(hW, L.door.height / 2, doorZStart + L.door.width / 2);
-    doorGroup.rotation.y = 0.35;
+    doorGroup.position.set(hW, L.door.height / 2, ns3D(doorZStart + L.door.width / 2));
+    doorGroup.rotation.y = -0.35;
     scene.add(doorGroup);
 
     // (No ceiling — open top for architectural model view)
@@ -1144,15 +1149,15 @@
     const hoodGeo = new THREE.BufferGeometry();
     const hv = [ // 8 vertices of a truncated pyramid
       // Bottom face (wider)
-      chimneyX - hoodW1 / 2, cH + 1.8, chimneyZ - hoodD1 / 2,
-      chimneyX + hoodW1 / 2, cH + 1.8, chimneyZ - hoodD1 / 2,
-      chimneyX + hoodW1 / 2, cH + 1.8, chimneyZ + hoodD1 / 2,
-      chimneyX - hoodW1 / 2, cH + 1.8, chimneyZ + hoodD1 / 2,
+      chimneyX - hoodW1 / 2, cH + 1.8, ns3D(chimneyZ - hoodD1 / 2),
+      chimneyX + hoodW1 / 2, cH + 1.8, ns3D(chimneyZ - hoodD1 / 2),
+      chimneyX + hoodW1 / 2, cH + 1.8, ns3D(chimneyZ + hoodD1 / 2),
+      chimneyX - hoodW1 / 2, cH + 1.8, ns3D(chimneyZ + hoodD1 / 2),
       // Top face (narrower)
-      chimneyX - hoodW2 / 2, cH + 1.8 + hoodH, chimneyZ - hoodD2 / 2,
-      chimneyX + hoodW2 / 2, cH + 1.8 + hoodH, chimneyZ - hoodD2 / 2,
-      chimneyX + hoodW2 / 2, cH + 1.8 + hoodH, chimneyZ + hoodD2 / 2,
-      chimneyX - hoodW2 / 2, cH + 1.8 + hoodH, chimneyZ + hoodD2 / 2,
+      chimneyX - hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ - hoodD2 / 2),
+      chimneyX + hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ - hoodD2 / 2),
+      chimneyX + hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ + hoodD2 / 2),
+      chimneyX - hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ + hoodD2 / 2),
     ];
     const hIdx = [
       0, 1, 5, 0, 5, 4, // front

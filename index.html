@@ -1029,79 +1029,79 @@
     const cH = 3; // counter height (3 feet = ~36 inches)
     const cD = L.counter.depth;
 
-    // ─── NE COUNTER (SINK AREA) — matches 2D: center z=-hH+3, L=5 ───
+    // ─── NE COUNTER (SINK AREA) — swapped to south side in 3D ───
     // Lower cabinet box
-    box(cD, cH - 0.15, 5, hW - cD / 2, (cH - 0.15) / 2, -hH + 3, M.counterBase);
+    box(cD, cH - 0.15, 5, hW - cD / 2, (cH - 0.15) / 2, hH - 3, M.counterBase);
     // Countertop slab
-    box(cD + 0.15, 0.15, 5.15, hW - cD / 2, cH - 0.075, -hH + 3, M.counterTop);
+    box(cD + 0.15, 0.15, 5.15, hW - cD / 2, cH - 0.075, hH - 3, M.counterTop);
     // Cabinet doors (3 doors)
     for (let ci = 0; ci < 3; ci++) {
-      const cdZ = -hH + 1.2 + ci * 1.6;
+      const cdZ = hH - 5.0 + ci * 1.6;
       box(0.06, 2, 1.3, hW - cD + 0.03, cH / 2 - 0.2, cdZ, M.cabinetDoor);
       // Handle
       cyl(0.03, 0.6, hW - cD - 0.02, cH / 2 - 0.2, cdZ - 0.3, M.cabinetHandle);
     }
     // Backsplash
-    box(0.12, 1.5, 5, hW - 0.06, cH + 0.75, -hH + 3, M.backsplash);
+    box(0.12, 1.5, 5, hW - 0.06, cH + 0.75, hH - 3, M.backsplash);
 
-    // ─── SECOND EAST WALL COUNTER (between sink and door) — matches 2D: center z=-hH+6, L=4 ───
-    box(cD, cH - 0.15, 4, hW - cD / 2, (cH - 0.15) / 2, -hH + 6, M.counterBase);
-    box(cD + 0.15, 0.15, 4.15, hW - cD / 2, cH - 0.075, -hH + 6, M.counterTop);
+    // ─── SECOND EAST WALL COUNTER (between sink and door) — swapped to south side ───
+    box(cD, cH - 0.15, 4, hW - cD / 2, (cH - 0.15) / 2, hH - 6, M.counterBase);
+    box(cD + 0.15, 0.15, 4.15, hW - cD / 2, cH - 0.075, hH - 6, M.counterTop);
     for (let ci = 0; ci < 2; ci++) {
-      const cdZ = -hH + 5 + ci * 1.6;
+      const cdZ = hH - 7 + ci * 1.6;
       box(0.06, 2, 1.3, hW - cD + 0.03, cH / 2 - 0.2, cdZ, M.cabinetDoor);
       cyl(0.03, 0.6, hW - cD - 0.02, cH / 2 - 0.2, cdZ - 0.3, M.cabinetHandle);
     }
-    box(0.12, 1.5, 4, hW - 0.06, cH + 0.75, -hH + 6, M.backsplash);
+    box(0.12, 1.5, 4, hW - 0.06, cH + 0.75, hH - 6, M.backsplash);
 
     // ─── TWO-SLAB STAINLESS STEEL SINK ───
     const sinkCX = hW - cD / 2;
     // Basin 1
-    box(1.2, 0.4, 1.1, sinkCX, cH - 0.35, -hH + 2, M.sinkBowl);
+    box(1.2, 0.4, 1.1, sinkCX, cH - 0.35, hH - 2, M.sinkBowl);
     // Basin rim 1
-    box(1.4, 0.06, 1.3, sinkCX, cH - 0.1, -hH + 2, M.sinkRim);
+    box(1.4, 0.06, 1.3, sinkCX, cH - 0.1, hH - 2, M.sinkRim);
     // Basin 2
-    box(1.2, 0.4, 1.1, sinkCX, cH - 0.35, -hH + 3.5, M.sinkBowl);
+    box(1.2, 0.4, 1.1, sinkCX, cH - 0.35, hH - 3.5, M.sinkBowl);
     // Basin rim 2
-    box(1.4, 0.06, 1.3, sinkCX, cH - 0.1, -hH + 3.5, M.sinkRim);
+    box(1.4, 0.06, 1.3, sinkCX, cH - 0.1, hH - 3.5, M.sinkRim);
     // Divider between basins
-    box(1.2, 0.3, 0.08, sinkCX, cH - 0.3, -hH + 2.75, M.sinkRim);
+    box(1.2, 0.3, 0.08, sinkCX, cH - 0.3, hH - 2.75, M.sinkRim);
 
     // Faucet assembly
     // Base
-    cyl(0.08, 0.3, sinkCX, cH + 0.15, -hH + 2.75, M.faucetMat);
+    cyl(0.08, 0.3, sinkCX, cH + 0.15, hH - 2.75, M.faucetMat);
     // Vertical pipe
-    cyl(0.04, 1.0, sinkCX, cH + 0.5, -hH + 2.75, M.faucetMat);
+    cyl(0.04, 1.0, sinkCX, cH + 0.5, hH - 2.75, M.faucetMat);
     // Spout (horizontal)
-    box(0.08, 0.08, 0.6, sinkCX, cH + 1.0, -hH + 2.75 + 0.25, M.faucetMat);
+    box(0.08, 0.08, 0.6, sinkCX, cH + 1.0, hH - 2.75 + 0.25, M.faucetMat);
     // Spout tip
-    cyl(0.03, 0.15, sinkCX, cH + 0.95, -hH + 2.75 + 0.52, M.faucetMat);
+    cyl(0.03, 0.15, sinkCX, cH + 0.95, hH - 2.75 + 0.52, M.faucetMat);
     // Handles
-    cyl(0.025, 0.2, sinkCX - 0.15, cH + 0.3, -hH + 2.75, M.faucetMat);
-    cyl(0.025, 0.2, sinkCX + 0.15, cH + 0.3, -hH + 2.75, M.faucetMat);
+    cyl(0.025, 0.2, sinkCX - 0.15, cH + 0.3, hH - 2.75, M.faucetMat);
+    cyl(0.025, 0.2, sinkCX + 0.15, cH + 0.3, hH - 2.75, M.faucetMat);
     // Handle tops
-    box(0.12, 0.04, 0.04, sinkCX - 0.15, cH + 0.42, -hH + 2.75, M.faucetMat);
-    box(0.12, 0.04, 0.04, sinkCX + 0.15, cH + 0.42, -hH + 2.75, M.faucetMat);
+    box(0.12, 0.04, 0.04, sinkCX - 0.15, cH + 0.42, hH - 2.75, M.faucetMat);
+    box(0.12, 0.04, 0.04, sinkCX + 0.15, cH + 0.42, hH - 2.75, M.faucetMat);
 
-    // ─── UPPER CABINETS (above NE sink area + second counter) ───
+    // ─── UPPER CABINETS (above sink area + second counter) ───
     const ucBottom = 5.5, ucH = 2.5, ucD = 1.2;
     // Above sink area
-    box(ucD, ucH, 5, hW - ucD / 2, ucBottom + ucH / 2, -hH + 3, M.upperCab);
+    box(ucD, ucH, 5, hW - ucD / 2, ucBottom + ucH / 2, hH - 3, M.upperCab);
     for (let ci = 0; ci < 3; ci++) {
-      const cdZ = -hH + 1.2 + ci * 1.6;
+      const cdZ = hH - 5.0 + ci * 1.6;
       box(0.05, ucH - 0.2, 1.3, hW - ucD + 0.025, ucBottom + ucH / 2, cdZ, M.cabinetDoor);
       cyl(0.025, 0.4, hW - ucD - 0.02, ucBottom + ucH / 2, cdZ - 0.3, M.cabinetHandle);
     }
     // Above second counter section
-    box(ucD, ucH, 4, hW - ucD / 2, ucBottom + ucH / 2, -hH + 6, M.upperCab);
+    box(ucD, ucH, 4, hW - ucD / 2, ucBottom + ucH / 2, hH - 6, M.upperCab);
     for (let ci = 0; ci < 2; ci++) {
-      const cdZ = -hH + 5 + ci * 1.6;
+      const cdZ = hH - 7 + ci * 1.6;
       box(0.05, ucH - 0.2, 1.3, hW - ucD + 0.025, ucBottom + ucH / 2, cdZ, M.cabinetDoor);
       cyl(0.025, 0.4, hW - ucD - 0.02, ucBottom + ucH / 2, cdZ - 0.3, M.cabinetHandle);
     }
 
-    // ─── SE COUNTER (STOVE AREA) — matches 2D: center z=hH-7, L=4 ───
-    const stoveAreaZ = hH - 7;
+    // ─── SE COUNTER (STOVE AREA) — swapped to north side in 3D ───
+    const stoveAreaZ = -hH + 7;
     // Lower cabinet
     box(cD, cH - 0.15, 4, hW - cD / 2, (cH - 0.15) / 2, stoveAreaZ, M.counterBase);
     // Countertop
@@ -1115,14 +1115,14 @@
     // Backsplash
     box(0.12, 1.5, 4, hW - 0.06, cH + 0.75, stoveAreaZ, M.backsplash);
 
-    // ─── STOVE COUNTER (under stove) — matches 2D: stove center z=hH-4, L=2 ───
-    box(cD, cH - 0.15, L.stove.d, hW - cD / 2, (cH - 0.15) / 2, hH - 4, M.counterBase);
-    box(cD + 0.15, 0.15, L.stove.d + 0.15, hW - cD / 2, cH - 0.075, hH - 4, M.counterTop);
-    box(0.12, 1.5, L.stove.d, hW - 0.06, cH + 0.75, hH - 4, M.backsplash);
+    // ─── STOVE COUNTER (under stove) — swapped to north side in 3D ───
+    box(cD, cH - 0.15, L.stove.d, hW - cD / 2, (cH - 0.15) / 2, -hH + 4, M.counterBase);
+    box(cD + 0.15, 0.15, L.stove.d + 0.15, hW - cD / 2, cH - 0.075, -hH + 4, M.counterTop);
+    box(0.12, 1.5, L.stove.d, hW - 0.06, cH + 0.75, -hH + 4, M.backsplash);
 
-    // ─── GAS STOVE / HOB — matches 2D: center z=hH-4 ───
+    // ─── GAS STOVE / HOB — swapped to north side in 3D ───
     const stoveCX = hW - cD / 2;
-    const stoveCZ = hH - 4;
+    const stoveCZ = -hH + 4;
     // Stove surface
     box(L.stove.w, 0.08, L.stove.d, stoveCX, cH + 0.04, stoveCZ, M.stoveTop);
     // Steel frame
@@ -1190,12 +1190,12 @@
     // One on each side of the chimney
     box(ucD, ucH, 1.2, hW - ucD / 2, ucBottom + ucH / 2, stoveAreaZ, M.upperCab);
     box(0.05, ucH - 0.2, 1, hW - ucD + 0.025, ucBottom + ucH / 2, stoveAreaZ, M.cabinetDoor);
-    box(ucD, ucH, 1.2, hW - ucD / 2, ucBottom + ucH / 2, hH - 2.5, M.upperCab);
-    box(0.05, ucH - 0.2, 1, hW - ucD + 0.025, ucBottom + ucH / 2, hH - 2.5, M.cabinetDoor);
+    box(ucD, ucH, 1.2, hW - ucD / 2, ucBottom + ucH / 2, -hH + 2.5, M.upperCab);
+    box(0.05, ucH - 0.2, 1, hW - ucD + 0.025, ucBottom + ucH / 2, -hH + 2.5, M.cabinetDoor);
 
-    // ─── FRIDGE (SW corner) ───
+    // ─── FRIDGE (SW corner) — swapped with pantry ───
     const fX = -hW + L.fridge.w / 2 + 0.3;
-    const fZ = hH - L.fridge.d / 2 - 0.3;
+    const fZ = -hH + 4;
     // Main body
     box(L.fridge.w, 6.5, L.fridge.d, fX, 6.5 / 2, fZ, M.fridgeBody);
     // Freezer line
@@ -1206,9 +1206,9 @@
     // Top of fridge
     box(L.fridge.w + 0.04, 0.08, L.fridge.d + 0.04, fX, 6.54, fZ, M.cabinetHandle);
 
-    // ─── PANTRY / SHELVING (NW area) — matches 2D: center z=-hH+4 ───
+    // ─── PANTRY / SHELVING (NW area) — swapped with fridge ───
     const pX = -hW + L.pantry.w / 2 + 0.3;
-    const pZ = -hH + 4;
+    const pZ = hH - L.fridge.d / 2 - 0.3;
     // Frame
     box(L.pantry.w, 7, 0.12, pX, 3.5, pZ - 2 + 0.06, M.pantryBody);
     box(L.pantry.w, 7, 0.12, pX, 3.5, pZ + 2 - 0.06, M.pantryBody);

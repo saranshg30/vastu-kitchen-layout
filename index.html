@@ -828,7 +828,7 @@
 
     // Window light (from South wall)
     const winLight = new THREE.SpotLight(0xddeeff, 0.6, 20, Math.PI / 4, 0.5);
-    winLight.position.set(hW + 2, 5, 0);
+    winLight.position.set(ns3D(hW + 2), 5, 0);
     winLight.target.position.set(0, 2, 0);
     scene.add(winLight); scene.add(winLight.target);
 

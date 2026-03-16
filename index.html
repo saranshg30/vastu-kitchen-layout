@@ -816,7 +816,7 @@
     scene.add(new THREE.HemisphereLight(0xffeedd, 0xd4c4a8, 0.35));
 
     const sun = new THREE.DirectionalLight(0xfff0d4, 0.65);
-    sun.position.set(10, 22, ns3D(-8));
+    sun.position.set(ns3D(10), 22, -8);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
     sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 60;
@@ -834,14 +834,14 @@
 
     // Under-cabinet warm lights
     const kitchenLight1 = new THREE.PointLight(0xffcc88, 0.4, 8, 2);
-    kitchenLight1.position.set(hW - 1.2, 5.5, ns3D(-hH + 3));
+    kitchenLight1.position.set(ns3D(hW - 1.2), 5.5, -hH + 3);
     scene.add(kitchenLight1);
     const kitchenLight2 = new THREE.PointLight(0xffcc88, 0.4, 8, 2);
-    kitchenLight2.position.set(hW - 1.2, 5.5, ns3D(hH - 5));
+    kitchenLight2.position.set(ns3D(hW - 1.2), 5.5, hH - 5);
     scene.add(kitchenLight2);
     // Pantry area
     const kitchenLight3 = new THREE.PointLight(0xffe0aa, 0.3, 8, 2);
-    kitchenLight3.position.set(-hW + 1.5, 5, ns3D(-hH + 3));
+    kitchenLight3.position.set(ns3D(-hW + 1.5), 5, -hH + 3);
     scene.add(kitchenLight3);
 
     // ─── MATERIALS (PBR-quality) ───
@@ -890,17 +890,17 @@
     // ─── HELPER FUNCTIONS ───
     function box(w, h, d, x, y, z, mat) {
       const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
-      m.position.set(x, y, ns3D(z)); m.castShadow = true; m.receiveShadow = true;
+      m.position.set(ns3D(x), y, z); m.castShadow = true; m.receiveShadow = true;
       scene.add(m); return m;
     }
     function cyl(r, h, x, y, z, mat, seg) {
       const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg || 32), mat);
-      m.position.set(x, y, ns3D(z)); m.castShadow = true; m.receiveShadow = true;
+      m.position.set(ns3D(x), y, z); m.castShadow = true; m.receiveShadow = true;
       scene.add(m); return m;
     }
     function torus(r, tube, x, y, z, mat) {
       const m = new THREE.Mesh(new THREE.TorusGeometry(r, tube, 16, 48), mat);
-      m.position.set(x, y, ns3D(z)); m.rotation.x = Math.PI / 2;
+      m.position.set(ns3D(x), y, z); m.rotation.x = Math.PI / 2;
       m.castShadow = true; scene.add(m); return m;
     }
 
@@ -915,7 +915,7 @@
         const td = Math.min(tileSize, hH - fz);
         const tile = new THREE.Mesh(new THREE.PlaneGeometry(tw, td), mat);
         tile.rotation.x = -Math.PI / 2;
-        tile.position.set(fx + tw / 2, 0.001, ns3D(fz + td / 2));
+        tile.position.set(ns3D(fx + tw / 2), 0.001, fz + td / 2);
         tile.receiveShadow = true;
         scene.add(tile);
       }
@@ -993,7 +993,7 @@
     handleMesh.rotation.x = Math.PI / 2;
     handleMesh.position.set(-0.12, 0, -panelW / 2 + 0.4);
     doorGroup.add(handleMesh);
-    doorGroup.position.set(hW, L.door.height / 2, ns3D(doorZStart + L.door.width / 2));
+    doorGroup.position.set(ns3D(hW), L.door.height / 2, doorZStart + L.door.width / 2);
     doorGroup.rotation.y = -0.35;
     scene.add(doorGroup);
 
@@ -1149,15 +1149,15 @@
     const hoodGeo = new THREE.BufferGeometry();
     const hv = [ // 8 vertices of a truncated pyramid
       // Bottom face (wider)
-      chimneyX - hoodW1 / 2, cH + 1.8, ns3D(chimneyZ - hoodD1 / 2),
-      chimneyX + hoodW1 / 2, cH + 1.8, ns3D(chimneyZ - hoodD1 / 2),
-      chimneyX + hoodW1 / 2, cH + 1.8, ns3D(chimneyZ + hoodD1 / 2),
-      chimneyX - hoodW1 / 2, cH + 1.8, ns3D(chimneyZ + hoodD1 / 2),
+      ns3D(chimneyX - hoodW1 / 2), cH + 1.8, chimneyZ - hoodD1 / 2,
+      ns3D(chimneyX + hoodW1 / 2), cH + 1.8, chimneyZ - hoodD1 / 2,
+      ns3D(chimneyX + hoodW1 / 2), cH + 1.8, chimneyZ + hoodD1 / 2,
+      ns3D(chimneyX - hoodW1 / 2), cH + 1.8, chimneyZ + hoodD1 / 2,
       // Top face (narrower)
-      chimneyX - hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ - hoodD2 / 2),
-      chimneyX + hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ - hoodD2 / 2),
-      chimneyX + hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ + hoodD2 / 2),
-      chimneyX - hoodW2 / 2, cH + 1.8 + hoodH, ns3D(chimneyZ + hoodD2 / 2),
+      ns3D(chimneyX - hoodW2 / 2), cH + 1.8 + hoodH, chimneyZ - hoodD2 / 2,
+      ns3D(chimneyX + hoodW2 / 2), cH + 1.8 + hoodH, chimneyZ - hoodD2 / 2,
+      ns3D(chimneyX + hoodW2 / 2), cH + 1.8 + hoodH, chimneyZ + hoodD2 / 2,
+      ns3D(chimneyX - hoodW2 / 2), cH + 1.8 + hoodH, chimneyZ + hoodD2 / 2,
     ];
     const hIdx = [
       0, 1, 5, 0, 5, 4, // front
